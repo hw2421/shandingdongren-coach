@@ -35,6 +35,8 @@ MODULES = [
 
 DIAG = json.loads((BASE/"diag_data.json").read_text(encoding="utf-8"))
 DIAG_UI = (BASE/"diag_ui.js").read_text(encoding="utf-8")
+PLANDATA = json.loads((BASE/"plan_data.json").read_text(encoding="utf-8"))
+LOG_UI = (BASE/"log_ui.js").read_text(encoding="utf-8")
 
 # ---------- 1. 配图已全部移除（仅保留文字与页码出处） ----------
 md_src = {fname: (BASE/fname).read_text(encoding="utf-8") for _,_,_,fns in MODULES for fname in fns.split("|")}
@@ -224,6 +226,75 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .drfoot{margin-top:16px;padding-top:9px;border-top:1px dashed var(--line);font-size:10.5px;color:#6b7382;line-height:1.7}
 .dract2{display:flex;gap:10px;margin:14px 0 6px}
 @media(max-width:400px){.dbtn.ghost{flex:0 0 88px;font-size:14px}}
+/* ===== 训练日志 ===== */
+.card.log{background:linear-gradient(150deg,#101a14 0%,var(--card) 62%);border-color:#2a4a35}
+.card.log .n{color:var(--green)}
+.lghome{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.lgcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 15px;cursor:pointer;transition:border-color .12s}
+.lgcard:hover{border-color:#3d4454}
+.lgcard.lg-cur{background:linear-gradient(150deg,#12281c 0%,var(--card) 65%);border-color:#2a5c3f}
+.lgcard{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lgct{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.lgct b{font-size:15px;line-height:1.4}
+.lgmeta{font-size:11.5px;color:var(--sub)}
+.lgbadge{font-size:10.5px;color:var(--green);border:1px solid rgba(62,207,142,.35);border-radius:5px;padding:0 6px;width:fit-content}
+.lgbadge.blue{color:var(--blue);border-color:rgba(77,163,255,.35)}
+.lgarr{color:var(--green);font-size:18px;flex:none}
+.lgdrop{width:100%;margin-top:4px}
+.lgdrop select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;color:var(--txt);font-size:14px;outline:none;-webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--sub) 50%),linear-gradient(135deg,var(--sub) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+.lgstat{display:flex;gap:8px}
+.lgstat div{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;text-align:center;padding:9px 4px}
+.lgstat b{display:block;font-size:17px;color:var(--acc2)}
+.lgstat span{font-size:10.5px;color:var(--sub)}
+.lgrecent{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.lgrt{font-size:12px;color:var(--sub);margin-bottom:6px;font-weight:600}
+.lgri{padding:8px 0;border-top:1px dashed var(--line);cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.lgri b{font-size:13px;color:var(--acc2)}
+.lgri span{font-size:11.5px;color:var(--sub);line-height:1.5}
+/* 训练日志首页横幅（置顶） */
+.card.log.banner{grid-column:1/-1;margin-top:14px;flex-direction:row;align-items:center;gap:16px;background:linear-gradient(150deg,#122a1d 0%,var(--card) 65%);border-color:#2f6a48}
+.card.log.banner .top{flex:none}
+.card.log.banner .t{margin-top:0;font-size:16.5px}
+.card.log.banner .d{flex:none;margin:0;-webkit-line-clamp:2}
+.card.log.banner .n{border:none;margin:0 0 0 auto;padding:0;white-space:nowrap;color:var(--green)}
+.lgstatic{cursor:default}
+.lgok{color:var(--green);font-size:11px;border:1px solid rgba(62,207,142,.35);border-radius:5px;padding:1px 6px;margin-left:6px}
+.lgneed{color:#f0a742;font-size:11px;border:1px solid rgba(240,167,66,.35);border-radius:5px;padding:1px 6px;margin-left:6px}
+.lgmaxgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.lgnote{font-size:11.5px;color:var(--sub);line-height:1.7;background:var(--card2);border-radius:8px;padding:8px 10px}
+.mvrow{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-bottom:8px}
+.mvname{font-size:13px;font-weight:600;color:var(--acc2);margin-bottom:6px;line-height:1.5}
+.mvinputs{display:flex;gap:6px;flex-wrap:wrap}
+.mvw{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--sub);flex:1;min-width:72px}
+.mvw input{width:100%;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:6px 7px;color:var(--txt);font-size:13px;outline:none;font-family:inherit}
+.mvw input:focus{border-color:var(--acc)}
+.mvtab{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;margin-top:6px;display:block;overflow-x:auto}
+.mvtab th,.mvtab td{border:1px solid var(--line);padding:5px 8px;text-align:left;white-space:nowrap}
+.mvtab th{background:var(--card2);color:var(--acc2);font-weight:600}
+/* 计划页 */
+.ptags{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px}
+.ptag{font-size:11px;color:var(--acc2);background:rgba(255,138,61,.1);border:1px solid rgba(255,138,61,.25);border-radius:6px;padding:2px 8px}
+.pfit{font-size:12px;color:var(--sub);margin-bottom:4px}
+.lgsec{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin-top:14px}
+.lgsh{font-size:15px;font-weight:700;color:var(--acc2);margin-bottom:10px}
+.lgform{display:flex;flex-direction:column;gap:9px;padding-bottom:12px;border-bottom:1px dashed var(--line)}
+.lgrow{display:flex;gap:9px}
+.lgrow .lgf{flex:1}
+.lgf{display:flex;flex-direction:column;gap:4px;min-width:0}
+.lgf label{font-size:11.5px;color:var(--sub)}
+.lgf input,.lgf select{background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--txt);font-size:13.5px;outline:none;font-family:inherit;width:100%}
+.lgf input:focus,.lgf select:focus{border-color:var(--acc)}
+.lgform .dbtn{margin-top:2px;padding:11px;font-size:14px}
+.lglisthead{display:flex;justify-content:space-between;align-items:center;margin:12px 0 8px;font-size:13px;font-weight:700;color:var(--acc2)}
+.lglisthead select{background:var(--card2);border:1px solid var(--line);border-radius:7px;color:var(--txt);font-size:12px;padding:4px 8px;outline:none}
+.lgnone{color:var(--sub);font-size:12.5px;text-align:center;padding:14px 0}
+.lgentry{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px}
+.lgehd{display:flex;align-items:center;gap:8px;font-size:12px}
+.lgehd b{color:var(--acc2)}
+.lgehd span{color:var(--sub);flex:1}
+.lgdel{color:#7a8290;font-size:11px;text-decoration:underline;flex:none}
+.lgect{font-size:13px;margin-top:4px;line-height:1.6;word-break:break-all}
+.lgenote{font-size:11.5px;color:var(--sub);margin-top:3px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -242,7 +313,7 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 <nav class="navbar" id="nav"></nav>
 <script>
 const DATA=__DATA__;
-const NAV=[["home","home","首页","M4 20 L16 8 l12 12 M8 18v12h6v-7h4v7h6V18"],["bigthree","bigthree","三大项","M4 20h24 M8 13v14 M20 13v14 M12 11v18 M16 11v18"],["troubleshooting","troubleshooting","排查","M14 6a7 7 0 0 0-7 9l-4 4 6 6 4-4a7 7 0 0 0 9-7 M22 22l8 8"],["plans","plans","计划","M7 6h18v24H7z M11 4v5 M21 4v5 M7 13h18 M11 22l3-4 2 2 4-5"],["diag","diag","诊断","M9 5h14v24H9z M12 12h8 M12 17h8 M12 22h5"],["qa","qa","问答","M6 6h20v14H14l-6 5v-5H6z M11 12h.5 M16 12h.5 M21 12h.5"]];
+const NAV=[["home","home","首页","M4 20 L16 8 l12 12 M8 18v12h6v-7h4v7h6V18"],["bigthree","bigthree","三大项","M4 20h24 M8 13v14 M20 13v14 M12 11v18 M16 11v18"],["troubleshooting","troubleshooting","排查","M14 6a7 7 0 0 0-7 9l-4 4 6 6 4-4a7 7 0 0 0 9-7 M22 22l8 8"],["plans","plans","计划","M7 6h18v24H7z M11 4v5 M21 4v5 M7 13h18 M11 22l3-4 2 2 4-5"],["log","log","日志","M6 4h16v24H6z M9 11h8 M9 16h8 M9 21h5"],["diag","diag","诊断","M9 5h14v24H9z M12 12h8 M12 17h8 M12 22h5"],["qa","qa","问答","M6 6h20v14H14l-6 5v-5H6z M11 12h.5 M16 12h.5 M21 12h.5"]];
 let view="home";
 const app=document.getElementById("view"),nav=document.getElementById("nav");
 // 首页卡片图标：统一在 6~26 坐标范围内绘制，保证视觉大小一致
@@ -254,6 +325,7 @@ const ICONS={
  "plateau":"M4 26h24M4 22l7-7 5 4 8-11M23 8h4v4",
  "nutrition":"M16 6c5 4 8 7 8 12a8 8 0 0 1-16 0c0-5 3-8 8-12M12 19a4 4 0 0 0 4 4",
  "rehab":"M16 5v22M5 16h22M8.9 8.9l14.2 14.2M23.1 8.9L8.9 23.1",
+ "log":"M6 4h16a2 2 0 0 1 2 2v20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2M8 4v4M16 4v4M8 12h8M8 17h11M8 22h6",
  "diag":"M9 5h14a2 2 0 0 1 2 2v20a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2M12 12h8M12 17h8M12 22h5M12 4v4",
  "qa":"M5 6h22a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H14l-7 6v-6H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1M11 13h.5M16 13h.5M21 13h.5",
 }
@@ -270,9 +342,9 @@ function modHTML(m,q){return `<h2 class="modtitle"><svg viewBox="0 0 32 32"><cir
 function cardIco(id){return icoBox(id)}
 function home(){
   const secN=DATA.reduce((a,m)=>a+m.sections.length,0);
-  return `<div class="hstats"><div><b>${DATA.length}</b><span>知识模块</span></div><div><b>${secN}</b><span>章节</span></div><div><b>14</b><span>训练计划</span></div></div><div class="cards">`+
+  return `<div class="hstats"><div><b>${DATA.length}</b><span>知识模块</span></div><div><b>${secN}</b><span>章节</span></div><div><b>14</b><span>训练计划</span></div></div><div class="card log banner" data-go="log"><div class="top">${icoBox("log")}<span class="idx">★</span></div><div class="t">训练日志 · 固定填报模板</div><div class="d">14 份计划任选 · 每份计划含训练极限输入、逐日逐动作重量/次数/组数/RPE 跟踪 · 按计划原文逻辑生成填报模板</div><div class="n">记下今天这一练 →</div></div><div class="cards">`+
   DATA.map((m,i)=>`<div class="card" data-go="${m.id}"><div class="top">${cardIco(m.id)}<span class="idx">0${i+1}</span></div><div class="t">${m.title}</div><div class="d">${m.desc}</div><div class="n">${m.sections.length} 个章节 · 查看 →</div></div>`).join("")+
-  `<div class="card diag" data-go="diag"><div class="top">${icoBox("diag")}<span class="idx">08</span></div><div class="t">个体诊断</div><div class="d">8 步问卷 → 自动生成问题清单与调整方案，支持一键导出 PDF</div><div class="n">开始诊断 · 约5分钟 →</div></div>`+
+  `<div class="card diag" data-go="diag"><div class="top">${icoBox("diag")}<span class="idx">09</span></div><div class="t">个体诊断</div><div class="d">8 步问卷 → 自动生成问题清单与调整方案，支持一键导出 PDF</div><div class="n">开始诊断 · 约5分钟 →</div></div>`+
   `<div class="card qa" data-go="qa"><div class="top">${icoBox("qa")}</div><div><div class="t">Q&A 智能问答</div><div class="d">输入问题，自动匹配资料库内容作为解答</div></div><div class="n">开始提问 →</div></div></div>`}
 function qaView(){return `<h2 class="modtitle"><svg viewBox="0 0 32 32"><path d="M6 6h20v14H14l-6 5v-5H6z"/><path d="M11 13h.6M16 13h.6M21 13h.6"/></svg> Q&A 智能问答</h2>
 <div class="qabox"><textarea id="qaInput" placeholder="输入你的训练问题，例如：&#10;· 深蹲总是膝盖内扣怎么办？&#10;· 增肌期每天该吃多少蛋白质？&#10;· 遇到平台期应该怎么突破？&#10;· 硬拉下背疼可能是什么问题？"></textarea>
@@ -307,10 +379,12 @@ function doQA(){
     top.map(x=>`<div class="anshead" style="margin-top:14px">${esc(x.m.title)} <small>› ${esc(x.s.t)}　匹配度 ${x.score}</small></div>`+secHTML(x.s,q.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&").slice(0,80))).join("");
   box.scrollIntoView({behavior:"smooth"});
 }
-function go(id){view=id;document.getElementById("q").value="";render();window.scrollTo(0,0);[...nav.children].forEach(c=>c.classList.toggle("on",c.dataset.go===id))}
+function go(id){view=id;if(id==="log"&&typeof logView==="function"){}document.getElementById("q").value="";render();window.scrollTo(0,0);[...nav.children].forEach(c=>c.classList.toggle("on",c.dataset.go===id))}
 function render(){
   let html="";
   if(view==="home"){html=home()}
+  else if(view==="log"){html=logView()}
+  else if(view.startsWith("plan-")){curPlanId=view.slice(5);html=planView()}
   else if(view==="diag"){html=diagView()}
   else if(view==="qa"){html=qaView()}
   else if(view==="all"){html=`<h2 class="modtitle">📚 全部模块</h2>`+DATA.map(m=>modHTML(m)).join("")}
@@ -331,16 +405,21 @@ function search(q){
   window.scrollTo(0,0);
 }
 let tm;document.getElementById("q").addEventListener("input",e=>{clearTimeout(tm);const v=e.target.value;tm=setTimeout(()=>{v.trim()?search(v):render()},250)});
-app.addEventListener("click",e=>{const d=e.target.closest("[data-go]");if(d)go(d.dataset.go)});
+app.addEventListener("click",e=>{const d=e.target.closest("[data-go]");if(d&&d.dataset.go)go(d.dataset.go)});
+app.addEventListener("change",e=>{if(e.target.id==="planSel"&&e.target.value)openPlan(e.target.value)});
 go("home");
 </script>
 <script>
 const DIAG=__DIAGDATA__;
 __DIAGUI__
 </script>
+<script>
+const PLANS=__PLANDATA__;
+__LOGUI__
+</script>
 </body>
 </html>"""
 
-out = HTML.replace("__DATA__", content_js).replace("__DIAGDATA__", json.dumps(DIAG, ensure_ascii=False)).replace("__DIAGUI__", DIAG_UI)
+out = HTML.replace("__DATA__", content_js).replace("__DIAGDATA__", json.dumps(DIAG, ensure_ascii=False)).replace("__DIAGUI__", DIAG_UI).replace("__PLANDATA__", json.dumps(PLANDATA, ensure_ascii=False)).replace("__LOGUI__", LOG_UI)
 OUT.write_text(out, encoding="utf-8")
 print("written", OUT, round(OUT.stat().st_size/1024/1024,2), "MB")
