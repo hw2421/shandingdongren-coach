@@ -48,23 +48,24 @@ function jmTM(pid, mod, lift){
   let tm=base;
   /* 每个模块的「第3周（转化期）」= 该模块第3周全，主项末组标准次数见下表 */
   const STD={1:10, 2:8, 3:5, 4:3};      // 各模块转化期末组 AMAP 的「标准次数」
+  /* 该周主项＝当周「第一个匹配动作」的最后一组；未填报 → 返回 null（下周期 TM 不显示） */
   for(let m=1;m<mod;m++){
     const wi=(m-1)*4+2;                  // 第 m 模块的第3周索引
     const w=t.weeks[wi]; if(!w) break;
-    /* 找该周主项动作的最后一组 */
-    let got=null;
-    w.d.forEach((day,di)=>{
-      if(got!==null) return;
-      day.g.forEach((g,gi)=>{
-        if(got!==null) return;
-        if(!/Comp (Squat|Bench|Deadlift)|比赛(深蹲|卧推|硬拉)/i.test(g.n)) return;
-        if(!new RegExp(lift==='sq'?'Squat|深蹲':lift==='bp'?'Bench|卧推':'Deadlift|硬拉','i').test(g.n)) return;
+    let got=null, found=false;
+    const liftRe=new RegExp(lift==='sq'?'Squat|深蹲':lift==='bp'?'Bench|卧推':'Deadlift|硬拉','i');
+    outer:
+    for(let di=0;di<w.d.length;di++){
+      for(let gi=0;gi<w.d[di].g.length;gi++){
+        const g=w.d[di].g[gi];
+        if(!liftRe.test(g.n)) continue;
+        found=true;                       // 找到第一个匹配动作即锁定
         const si=g.s.length-1;
-        const r=actualReps(pid,wi,di,gi,si);
-        if(r!==null) got=r;
-      });
-    });
-    if(got===null) break;                /* 没填 → 后续 TM 停在此，等用户填完 */
+        got=actualReps(pid,wi,di,gi,si);
+        break outer;
+      }
+    }
+    if(!found || got===null) return null; /* 未填报 → 不显示下周期训练极限 */
     tm = r25(tm + 2.5*(got - (STD[m]||5)));
   }
   return tm;
@@ -121,6 +122,8 @@ function planText(set, vars){
   const d=String(set.d||'').trim(), t=String(set.t||'').trim();
   if(!d && !t) return '*';
   if(d===t) return d;
+  if(set.tn && t) return d || '*';   /* ? 批注类备注不拼进计划列 */
+  if(!set.tn && t && set.t && !set.e) return (d? d+' ' : '')+t;  /* RPE 类备注拼进计划列（如 1*8 @RPE8） */
   if(d && /^[0-9\s+~\-]+$/.test(d)) return '*';
   return d || t || '*';
 }
@@ -207,9 +210,11 @@ function planView(){
     <div class="lgmaxgrid${inputs.length>2?' three':''}">${inputs.map(i=>`
       <div class="lgf"><label>${esc(i.label)}</label><input type="number" step="2.5" min="0" class="lgmaxI" data-k="${esc(i.k)}" value="${mx[i.k]!==undefined?mx[i.k]:(i.def!==undefined?i.def:'')}" placeholder="kg" onchange="saveMaxAuto()"></div>`).join('')}
     </div>
-    <div class="lgnote" style="margin-top:8px">📐 ${t.rolling? '后续各模块训练上限按上一模块第3周主项末组的「实次」自动推算，此处只填一次。' : '首次填一次极限即可，之后按计划表逻辑自动换算，全部取 2.5kg 整数倍。'}</div>
+    <div class="lgnote" style="margin-top:8px">📐 ${t.rolling? '模块1训练上限＝首填极限 × 90%；后续模块按上一模块第3周第一个主项动作最后一组的「实次」自动推算（未填写则不显示该模块训练上限）。此处只填一次。' : '首次填一次极限即可，之后按计划表逻辑自动换算，全部取 2.5kg 整数倍。'}</div>
     ${t.rolling? `<div class="jmroll" id="jmRoll">${jmRollHTML()}</div>`:''}
   </div>` : `<div class="lgsec"><div class="lgnote">🎯 本计划按 <b>RPE 处方</b>执行：重量由当天 RPE 与次数自行确定，不自动换算。填「实重 + 实次」即可记录。</div></div>`}
+
+  ${bigThreeHTML(p.id)}
 
   <div class="lgsec" id="gridSec">
     <div class="lgsh">✅ 每日完成 <span class="lgpg">${pr.D}/${pr.T} 组 · ${pr.pct}%</span></div>
@@ -223,6 +228,59 @@ function planView(){
   </div>
 
   ${(p.sections||[]).map(s=>`<div class="sec"><div class="hd" onclick="this.parentElement.classList.toggle('open')"><span>📋 ${esc(s[0])}</span><span class="arr">▶</span></div><div class="bd"><div class="content"><p>${esc(s[1])}</p></div></div></div>`).join('')}`;
+}
+
+/* ---------- 三大项（深蹲/卧推/硬拉）预测合计 ---------- */
+function bigThree(pid){
+  const t=getT(pid); if(!t) return null;
+  const KEY={sq:/^(tsq|sq2|sq)$/i, bp:/^(tbp|bp)$/i, dl:/^(tdl|dl)$/i};
+  const base={sq:null,bp:null,dl:null};
+  t.inputs.forEach(i=>{
+    for(const lift in KEY){
+      if(KEY[lift].test(i.k) && base[lift]===null){
+        const n=maxOf(pid,i.k);
+        if(n!==null) base[lift]=n;
+      }
+    }
+  });
+  /* 从已完成日志中取各动作最佳 e1RM（Epley：kg×(1+次数/30)） */
+  const GRP={sq:/深蹲|squat/i, bp:/卧推|bench/i, dl:/硬拉|deadlift/i};
+  const best={sq:0,bp:0,dl:0};
+  const logs=getLogs(pid);
+  t.weeks.forEach((w,wi)=>w.d.forEach((day,di)=>{
+    const rec=logs[dayKey(wi,di)]; if(!rec||!rec.sets) return;
+    day.g.forEach((g,gi)=>g.s.forEach((s,si)=>{
+      const it=rec.sets[gi+'_'+si]; if(!it) return;
+      const kg=+it.kg, reps=+it.reps;
+      if(!isFinite(kg)||kg<=0||!isFinite(reps)||reps<=0) return;
+      for(const lift in GRP){
+        if(GRP[lift].test(g.n)){
+          const e=kg*(1+reps/30);
+          if(e>best[lift]) best[lift]=r25(e);
+          break;
+        }
+      }
+    }));
+  }));
+  const baseSum=(base.sq||0)+(base.bp||0)+(base.dl||0);
+  const hasBase=baseSum>0;
+  const hasLog=best.sq||best.bp||best.dl;
+  const predSum=hasLog? r25(best.sq+best.bp+best.dl) : (hasBase? baseSum : null);
+  return {base, baseSum, hasBase, predSum, hasLog, best};
+}
+function bigThreeHTML(pid){
+  const b=bigThree(pid); if(!b) return '';
+  const diff=(b.hasLog&&b.hasBase)? Math.round(b.predSum-b.baseSum) : null;
+  const diffTxt=diff===null? '' : ` <span style="color:${diff>=0?'var(--acc)':'#e08a6a'}">(${diff>=0?'+':''}${diff} kg)</span>`;
+  const liftTxt=[['sq','蹲'],['bp','推'],['dl','拉']].map(([k,l])=>`${l} ${b.best[k]?fmtW(b.best[k]):(b.base[k]!==null&&b.base[k]!==undefined?fmtW(r25(b.base[k]*0.9)):'—')}`).join(' · ');
+  const predLine=b.hasLog? fmtW(b.predSum)+' kg'
+    : (b.hasBase? fmtW(b.baseSum)+' kg（暂无训练记录，暂按首填合计计）' : '—');
+  return `<div class="lgsec" id="b3sec"><div class="lgsh">🏆 三大项预测合计（深蹲+卧推+硬拉）</div>
+    <div class="b3box">
+      <div class="b3main"><b>${predLine}</b><span>预测合计${diffTxt}</span></div>
+      <div class="b3sub">依据训练日志最佳成绩估算（Epley 公式）：${liftTxt}</div>
+      <div class="b3sub">对比首次填写极限合计：<b>${b.hasBase?fmtW(b.baseSum)+' kg':'未填写'}</b></div>
+    </div></div>`;
 }
 
 /* ---------- 格子表（极紧凑：每周期一行） ---------- */
@@ -262,6 +320,9 @@ function saveMaxAuto(){
   const t=getT(p.id);
   const gb=document.getElementById('gridBox'); if(gb) gb.innerHTML=gridHTML(t);
   if(showDay){ const box=document.getElementById('dayBox'); if(box) box.innerHTML=dayHTML(t) }
+  const b3=document.getElementById('b3sec');
+  if(b3){ b3.outerHTML=bigThreeHTML(p.id) }
+  refreshRoll();
   refreshBar();
   toast('已自动保存 · 配重已更新');
 }
@@ -379,7 +440,7 @@ function dayHTML(t){
       const repsVal=(lg.reps!==undefined?lg.reps:'');
       html+=`<div class="trow${isSetDone(lg)?' done':''}">
         <span class="tno">${n+1}</span>
-        <span class="tplan">${esc(planText(s,vars))}</span>
+        <span class="tplan">${esc(planText(s,vars))}${(s.tn&&s.t)?`<i class="qnote" title="${esc(s.t)}" onclick="toast('${esc(s.t).replace(/'/g,"\\'")}')">?</i>`:''}</span>
         <span class="treps">${esc(reps||'—')}</span>
         <input type="number" inputmode="decimal" step="2.5" min="0" class="kgI" data-gi="${gi}" data-si="${si}" value="${kgVal!==''?kgVal:defKg}" placeholder="${defKg||'kg'}" onchange="saveSet(${gi},${si},'kg',this.value)">
         <input type="number" inputmode="numeric" step="1" min="0" class="rpI" data-gi="${gi}" data-si="${si}" value="${repsVal!==''?repsVal:(reps.match(/^\d+$/)?reps:'')}" placeholder="${esc(reps||'次')}" onchange="saveSet(${gi},${si},'reps',this.value)">

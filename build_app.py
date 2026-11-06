@@ -90,6 +90,20 @@ header{padding:26px 20px 14px;background:var(--bg)}
 .brand h1{font-size:23px;font-weight:800;letter-spacing:1px}
 .brand h1 span{color:var(--acc)}
 .tagline{color:var(--sub);font-size:13px;margin-top:6px}
+.hbanner{position:relative;border-radius:14px;overflow:hidden;margin:14px 0 4px;border:1px solid var(--line);background:#0c100c}
+.hbanner img{display:block;width:100%;height:190px;object-fit:cover;object-position:center 20%;filter:brightness(.82) saturate(1.05)}
+.hbanner .hbt{position:absolute;left:0;right:0;bottom:0;padding:26px 14px 10px;background:linear-gradient(transparent,rgba(5,8,5,.88));display:flex;flex-direction:column;gap:2px}
+.hbanner .hbt b{color:#fff;font-size:16px;letter-spacing:.5px}
+.hbanner .hbt span{color:var(--acc);font-size:11.5px}
+.searchbar.homeq{margin:18px 0 8px}
+.qnote{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;margin-left:4px;border:1px solid var(--line);border-radius:50%;font-size:8.5px;font-style:normal;color:var(--sub);cursor:pointer;vertical-align:1px;flex:none}
+.qnote:hover{color:var(--acc);border-color:var(--acc)}
+.b3box{background:#101512;border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-top:6px}
+.b3box .b3main{display:flex;align-items:baseline;gap:8px}
+.b3box .b3main b{color:var(--acc);font-size:20px;font-variant-numeric:tabular-nums}
+.b3box .b3main span{color:var(--sub);font-size:11px}
+.b3box .b3sub{color:var(--sub);font-size:10.5px;margin-top:4px;line-height:1.5}
+.b3box .b3sub b{color:var(--txt)}
 .searchbar{margin:16px 0 4px;position:relative}
 .searchbar input{width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px 11px 40px;color:var(--txt);font-size:15px;outline:none}
 .searchbar input:focus{border-color:var(--acc)}
@@ -382,8 +396,7 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
       <svg class="logo" viewBox="0 0 48 48" fill="none" stroke="#d5fa75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5l16 8.5V25c0 9.5-7 15.5-16 18C15 40.5 8 34.5 8 25V13.5z"/><path d="M17 27l4.5-5.5 3.5 3.5 6-8"/></svg>
       <h1>山顶洞人<span>力训教练</span></h1>
     </div>
-    <div class="tagline">力量训练知识体系 · 综合 16 份专业资料 · 18 个训练计划 · 支持智能问答</div>
-    <div class="searchbar"><input id="q" placeholder="搜索：低杆深蹲、平台期、腰痛、MEV…" /></div>
+    <div class="tagline">力量训练知识体系 · 支持智能问答</div>
   </header>
   <main id="view"></main>
   <div class="foot">本系统内容综合自：《力量训练原理》《肌肉肥大科学训练原则》《如何深蹲/卧推/硬拉·终极指南》《力量训练基础》《力量举指南（赵伟）》《Juggernaut 力量举手册》《力量举计划设计手册》《RTS 反应训练系统》《Westside 共轭法用户指南》《终极饮食设置指南》《肌骨疼痛康复临床工作笔记》及 RTS 系列×4、Juggernaut Method、腰王、Calgary Barbell、GZCL波浪撕裂者、SSTT×Jamal Browner、Russwole、帕金斯74kg、古斯塔夫16周、山顶洞人CATS 4.0、斯莫洛夫共 18 个训练计划（RTS×4、Juggernaut、腰王基础C1、腰王进阶C1、Calgary、GZCL、SSTT、Russwole、74kg、古斯塔夫、CATS×4 cycle、斯莫洛夫）。配图截取自对应资料页，页码为 PDF 物理页码，仅供个人学习。<br>伤病与康复内容仅供学习参考，不能替代专业医疗诊断，请及时就医。</div>
@@ -419,11 +432,12 @@ function secHTML(s,q){const open=isDiscord(s.t)?" open":"";return `<div class="s
 function modHTML(m,q){return `<h2 class="modtitle"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="3"/><path d="M16 4v5M16 23v5M4 16h5M23 16h5M8 8l3.5 3.5M20.5 20.5L24 24M24 8l-3.5 3.5M11.5 20.5L8 24"/></svg> ${m.title}<span class="badge">${m.sections.length}节</span></h2><div class="content" style="margin:0 0 6px;color:var(--sub);font-size:13px">${esc(m.desc)}</div>`+m.sections.map(s=>secHTML(s,q)).join("")}
 function cardIco(id){return icoBox(id)}
 function home(){
-  const secN=DATA.reduce((a,m)=>a+m.sections.length,0);
-  return `<div class="hstats"><div><b>${DATA.length}</b><span>知识模块</span></div><div><b>${secN}</b><span>章节</span></div><div><b>14</b><span>训练计划</span></div></div><div class="card log banner" data-go="log"><div class="top">${icoBox("log")}<span class="idx">★</span></div><div class="t">训练日志 · 固定填报模板</div><div class="d">14 份计划任选 · 每份计划含训练极限输入、逐日逐动作重量/次数/组数/RPE 跟踪 · 按计划原文逻辑生成填报模板</div><div class="n">记下今天这一练 →</div></div><div class="cards">`+
-  DATA.map((m,i)=>{ if(m.id==="plans") return `<div class="card" data-go="log"><div class="top">${cardIco(m.id)}<span class="idx">0${i+1}</span></div><div class="t">训练计划</div><div class="d">14 份原表迁移计划 · 格子表追踪完成度 · 逐组填报自动保存</div><div class="n">进入训练日志 →</div></div>`; return `<div class="card" data-go="${m.id}"><div class="top">${cardIco(m.id)}<span class="idx">0${i+1}</span></div><div class="t">${m.title}</div><div class="d">${m.desc}</div><div class="n">${m.sections.length} 个章节 · 查看 →</div></div>` }).join("")+
+  return `<div class="hbanner"><img src="__BANNER__" alt="banner"/><div class="hbt"><b>山顶洞人力训教练</b><span>练好三大项 · 记好每一组</span></div></div>`+
+  `<div class="card log banner" data-go="log"><div class="top">${icoBox("log")}<span class="idx">★</span></div><div class="t">训练日志 · 固定填报模板</div><div class="d">18 份计划任选 · 每份计划含训练极限输入、逐日逐动作重量/次数/组数/RPE 跟踪 · 按计划原文逻辑生成填报模板</div><div class="n">记下今天这一练 →</div></div><div class="cards">`+
+  DATA.map((m,i)=>{ if(m.id==="plans") return `<div class="card" data-go="log"><div class="top">${cardIco(m.id)}<span class="idx">0${i+1}</span></div><div class="t">训练计划</div><div class="d">18 份原表迁移计划 · 格子表追踪完成度 · 逐组填报自动保存 · 支持三大项预测合计</div><div class="n">进入训练日志 →</div></div>`; return `<div class="card" data-go="${m.id}"><div class="top">${cardIco(m.id)}<span class="idx">0${i+1}</span></div><div class="t">${m.title}</div><div class="d">${m.desc}</div><div class="n">${m.sections.length} 个章节 · 查看 →</div></div>` }).join("")+
   `<div class="card diag" data-go="diag"><div class="top">${icoBox("diag")}<span class="idx">09</span></div><div class="t">个体诊断</div><div class="d">8 步问卷 → 自动生成问题清单与调整方案，支持一键导出 PDF</div><div class="n">开始诊断 · 约5分钟 →</div></div>`+
-  `<div class="card qa" data-go="qa"><div class="top">${icoBox("qa")}</div><div><div class="t">Q&A 智能问答</div><div class="d">输入问题，自动匹配资料库内容作为解答</div></div><div class="n">开始提问 →</div></div></div>`}
+  `<div class="card qa" data-go="qa"><div class="top">${icoBox("qa")}</div><div><div class="t">Q&A 智能问答</div><div class="d">输入问题，自动匹配资料库内容作为解答</div></div><div class="n">开始提问 →</div></div></div>`+
+  `<div class="searchbar homeq"><input id="q" placeholder="搜索：低杆深蹲、平台期、腰痛、MEV…" /></div>`}
 function qaView(){return `<h2 class="modtitle"><svg viewBox="0 0 32 32"><path d="M6 6h20v14H14l-6 5v-5H6z"/><path d="M11 13h.6M16 13h.6M21 13h.6"/></svg> Q&A 智能问答</h2>
 <div class="qabox"><textarea id="qaInput" placeholder="输入你的训练问题，例如：&#10;· 深蹲总是膝盖内扣怎么办？&#10;· 增肌期每天该吃多少蛋白质？&#10;· 遇到平台期应该怎么突破？&#10;· 硬拉下背疼可能是什么问题？"></textarea>
 <button class="qabtn" id="qaBtn">提问 · 从资料库找答案</button>
@@ -457,7 +471,7 @@ function doQA(){
     top.map(x=>`<div class="anshead" style="margin-top:14px">${esc(x.m.title)} <small>› ${esc(x.s.t)}　匹配度 ${x.score}</small></div>`+secHTML(x.s,q.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&").slice(0,80))).join("");
   box.scrollIntoView({behavior:"smooth"});
 }
-function go(id){view=id;if(id==="log"&&typeof logView==="function"){}document.getElementById("q").value="";render();window.scrollTo(0,0);[...nav.children].forEach(c=>c.classList.toggle("on",c.dataset.go===id))}
+function go(id){view=id;if(id==="log"&&typeof logView==="function"){}const qel=document.getElementById("q");if(qel)qel.value="";render();window.scrollTo(0,0);[...nav.children].forEach(c=>c.classList.toggle("on",c.dataset.go===id))}
 function render(){
   let html="";
   if(view==="home"){html=home()}
@@ -469,6 +483,7 @@ function render(){
   else{const m=DATA.find(x=>x.id===view);html=`<div class="back" onclick="go('home')">← 返回首页</div>`+modHTML(m)}
   app.innerHTML=html;
   if(view==="qa"){document.getElementById("qaBtn").onclick=doQA;document.getElementById("qaInput").addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key==="Enter")doQA()})}
+  if(view==="home")bindQ();
 }
 function search(q){
   q=q.trim();if(q.length<1){render();return}
@@ -482,7 +497,9 @@ function search(q){
   app.innerHTML=html+(total===0?`<p style="color:var(--sub);text-align:center;margin-top:40px">没有找到相关内容，换个关键词试试～</p>`:"");
   window.scrollTo(0,0);
 }
-let tm;document.getElementById("q").addEventListener("input",e=>{clearTimeout(tm);const v=e.target.value;tm=setTimeout(()=>{v.trim()?search(v):render()},250)});
+let tm;
+function bindQ(){const el=document.getElementById("q");if(!el)return;el.removeEventListener("input",qHandler);el.addEventListener("input",qHandler)}
+function qHandler(e){clearTimeout(tm);const v=e.target.value;tm=setTimeout(()=>{v.trim()?search(v):render()},250)}
 app.addEventListener("click",e=>{const d=e.target.closest("[data-go]");if(d&&d.dataset.go)go(d.dataset.go)});
 app.addEventListener("change",e=>{if(e.target.id==="planSel"&&e.target.value)openPlan(e.target.value)});
 go("home");
@@ -499,6 +516,10 @@ __LOGUI__
 </body>
 </html>"""
 
-out = HTML.replace("__DATA__", content_js).replace("__DIAGDATA__", json.dumps(DIAG, ensure_ascii=False)).replace("__DIAGUI__", DIAG_UI).replace("__PLANDATA__", json.dumps(PLANDATA, ensure_ascii=False)).replace("__PLANTABLES__", json.dumps(PLANTABLES, ensure_ascii=False)).replace("__LOGUI__", LOG_UI)
+import base64, os
+_bpath = "/root/uploads/1793958322824025016-1793958306039-qksd72dz-898207270526f63914ed16a1e47ad2ea.jpg"
+BANNER = ("data:image/jpeg;base64," + base64.b64encode(open(_bpath, "rb").read()).decode()) if os.path.exists(_bpath) else ""
+
+out = HTML.replace("__DATA__", content_js).replace("__DIAGDATA__", json.dumps(DIAG, ensure_ascii=False)).replace("__DIAGUI__", DIAG_UI).replace("__PLANDATA__", json.dumps(PLANDATA, ensure_ascii=False)).replace("__PLANTABLES__", json.dumps(PLANTABLES, ensure_ascii=False)).replace("__LOGUI__", LOG_UI).replace("__BANNER__", BANNER)
 OUT.write_text(out, encoding="utf-8")
 print("written", OUT, round(OUT.stat().st_size/1024/1024,2), "MB")
