@@ -274,6 +274,11 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .mvtab th,.mvtab td{border:1px solid var(--line);padding:5px 8px;text-align:left;white-space:nowrap}
 .mvtab th{background:var(--card2);color:var(--acc2);font-weight:600}
 
+.vrec{margin:14px 0 4px;background:rgba(94,216,143,.06);border:1px solid rgba(94,216,143,.25);border-radius:10px;padding:10px 12px}
+.vrec b{display:block;font-size:12.5px;color:var(--green);margin-bottom:6px}
+.vrec a{display:block;font-size:12.5px;color:var(--blue);text-decoration:none;padding:4px 0;border-bottom:1px dashed var(--line);line-height:1.5}
+.vrec a:last-of-type{border-bottom:none}
+.vrec i{display:block;font-size:10px;color:var(--sub);font-style:normal;margin-top:5px}
 /* ===== 训练日志 v5：格子表 + 当日表 ===== */
 .lgstatic{cursor:default}
 .lgok{color:var(--green);font-size:10.5px;border:1px solid rgba(94,216,143,.35);border-radius:5px;padding:1px 6px;margin-left:6px;white-space:nowrap}
@@ -319,6 +324,11 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .trow.done .tplan{color:var(--acc2)}
 .trow.done input{background:#1d2a17;border-color:#4d6b39;color:var(--acc2)}
 /* 保存提示 */
+.dnav2{display:flex;align-items:center;gap:8px;margin:8px 0 4px}
+.dn2b{flex:1;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px 6px;font-size:12px;cursor:pointer;font-family:inherit}
+.dn2b:active{opacity:.8}
+.dn2b:disabled{opacity:.35}
+.dn2pos{font-size:10.5px;color:var(--sub);flex:none;font-variant-numeric:tabular-nums}
 .lgtoast{position:fixed;left:50%;bottom:86px;transform:translate(-50%,14px);background:#2a3a22;border:1px solid var(--acc);color:var(--acc);font-size:12.5px;padding:8px 16px;border-radius:99px;opacity:0;pointer-events:none;transition:.22s;z-index:99;white-space:nowrap;box-shadow:0 6px 22px rgba(0,0,0,.5)}
 .lgtoast.on{opacity:1;transform:translate(-50%,0)}
 @media(max-width:400px){
@@ -392,13 +402,38 @@ nav.addEventListener("click",e=>{const d=e.target.closest("[data-go]");if(d)go(d
 function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
 function hl(html,q){if(!q)return html;try{const re=new RegExp(q.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&"),"g");return html.replace(re,m=>`<span class="hit">${m}</span>`)}catch(e){return html}}
 function isDiscord(t){return /分歧|对照表/.test(t)}
-function secHTML(s,q){const open=isDiscord(s.t)?" open":"";return `<div class="sec${open}"><div class="hd" onclick="this.parentElement.classList.toggle('open')"><span>${esc(s.t)}</span><span class="arr">▶</span></div><div class="bd"><div class="content">${hl(s.h,q)}</div></div></div>`}
+/* ===== 动作教学视频推荐 ===== */
+const MOV_VIDEOS=[
+ ["深蹲",[["断头台BTS · 如何深蹲（终极指南）","https://search.bilibili.com/all?keyword=%E6%96%AD%E5%A4%B4%E5%8F%B0BTS%20%E6%B7%B1%E8%B9%B2%E6%95%99%E5%AD%A6"],["Alan Thrall · How to Squat（中字）","https://search.bilibili.com/all?keyword=Alan%20Thrall%20squat%20%E4%B8%AD%E5%AD%97"],["Starting Strength · 低杆深蹲原理","https://search.bilibili.com/all?keyword=%E4%BD%8E%E6%9D%86%E6%B7%B1%E8%B9%B2%20%E6%95%99%E5%AD%A6"]]],
+ ["卧推",[["断头台BTS · 如何卧推（终极指南）","https://search.bilibili.com/all?keyword=%E6%96%AD%E5%A4%B4%E5%8F%B0BTS%20%E5%8D%A7%E6%8E%A8%E6%95%99%E5%AD%A6"],["Alan Thrall · How to Bench Press（中字）","https://search.bilibili.com/all?keyword=Alan%20Thrall%20bench%20%E4%B8%AD%E5%AD%97"],["Jeff Nippard · 卧推技术细节","https://search.bilibili.com/all?keyword=Jeff%20Nippard%20%E5%8D%A7%E6%8E%A8%20%E4%B8%AD%E5%AD%97"]]],
+ ["硬拉",[["断头台BTS · 如何硬拉（终极指南）","https://search.bilibili.com/all?keyword=%E6%96%AD%E5%A4%B4%E5%8F%B0BTS%20%E7%A1%AC%E6%8B%89%E6%95%99%E5%AD%A6"],["Alan Thrall · How to Deadlift（中字）","https://search.bilibili.com/all?keyword=Alan%20Thrall%20deadlift%20%E4%B8%AD%E5%AD%97"],["Starting Strength · 传统硬拉5步法","https://search.bilibili.com/all?keyword=Starting%20Strength%20%E7%A1%AC%E6%8B%89%20%E4%B8%AD%E5%AD%97"]]],
+ ["相扑硬拉",[["断头台BTS · 相扑硬拉教学","https://search.bilibili.com/all?keyword=%E7%9B%B8%E5%86%92%E7%A1%AC%E6%8B%89%20%E6%95%99%E5%AD%A6"],["Jeff Nippard · 相扑vs传统硬拉","https://search.bilibili.com/all?keyword=Jeff%20Nippard%20%E7%9B%B8%E5%86%92%E7%A1%AC%E6%8B%89%20%E4%B8%AD%E5%AD%97"]]],
+ ["实力推",[["Alan Thrall · How to OHP（中字）","https://search.bilibili.com/all?keyword=Alan%20Thrall%20overhead%20press%20%E4%B8%AD%E5%AD%97"],["断头台BTS · 实力推教学","https://search.bilibili.com/all?keyword=%E5%AE%9E%E5%8A%9B%E6%8E%A8%20%E6%95%99%E5%AD%A6"]]],
+ ["罗马尼亚硬拉",[["Jeff Nippard · RDL 技术（中字）","https://search.bilibili.com/all?keyword=Jeff%20Nippard%20RDL%20%E4%B8%AD%E5%AD%97"],["Alan Thrall · How to RDL","https://search.bilibili.com/all?keyword=Alan%20Thrall%20romanian%20deadlift"]]],
+ ["前蹲",[["断头台BTS · 前蹲教学","https://search.bilibili.com/all?keyword=%E5%89%8D%E8%B9%B2%20%E6%95%99%E5%AD%A6"],["Alan Thrall · How to Front Squat","https://search.bilibili.com/all?keyword=Alan%20Thrall%20front%20squat"]]],
+ ["引体",[["Jeff Nippard · 引体向上完整教学（中字）","https://search.bilibili.com/all?keyword=Jeff%20Nippard%20pull%20up%20%E4%B8%AD%E5%AD%97"],["引体向上 从0到1教学","https://search.bilibili.com/all?keyword=%E5%BC%95%E4%BD%93%E5%90%91%E4%B8%8A%20%E6%95%99%E5%AD%A6"]]],
+ ["划船",[["Alan Thrall · 杠铃划船教学","https://search.bilibili.com/all?keyword=Alan%20Thrall%20barbell%20row%20%E4%B8%AD%E5%AD%97"],["潘德雷划船 Pendlay Row","https://search.bilibili.com/all?keyword=Pendlay%20Row%20%E6%95%99%E5%AD%A6"]]],
+ ["臀",[["Jeff Nippard · 臀推 Hip Thrust（中字）","https://search.bilibili.com/all?keyword=Jeff%20Nippard%20hip%20thrust%20%E4%B8%AD%E5%AD%97"],["Bret Contreras · 臀部训练科学","https://search.bilibili.com/all?keyword=%E8%87%80%E6%8E%A8%20%E6%95%99%E5%AD%A6"]]],
+ ["保加利亚",[["Jeff Nippard · 保加利亚分腿蹲（中字）","https://search.bilibili.com/all?keyword=Jeff%20Nippard%20bulgarian%20split%20squat%20%E4%B8%AD%E5%AD%97"]]],
+ ["臂屈伸",[["Alan Thrall · 双杠臂屈伸","https://search.bilibili.com/all?keyword=%E5%8F%8C%E6%9D%A0%E8%87%82%E5%B1%88%E4%BC%B8%20%E6%95%99%E5%AD%A6"]]],
+];
+function movLinks(text){
+  if(!text) return '';
+  let out='';
+  for(const [kw,vs] of MOV_VIDEOS){
+    if(text.indexOf(kw)<0) continue;
+    out+=`<div class="vrec"><b>🎬 「${kw}」教学视频推荐</b>`+vs.map(v=>`<a href="${v[1]}" target="_blank" rel="noopener">${v[0]} ↗</a>`).join('')+`<i>点按将打开站内搜索页，推荐优先观看高播放量的中文教学</i></div>`;
+    if(out.length>900) break;   // 每节最多约3个动作
+  }
+  return out;
+}
+function secHTML(s,q){const open=isDiscord(s.t)?" open":"";return `<div class="sec${open}"><div class="hd" onclick="this.parentElement.classList.toggle('open')"><span>${esc(s.t)}</span><span class="arr">▶</span></div><div class="bd"><div class="content">${hl(s.h,q)}${movLinks(s.t+' '+s.h.replace(/<[^>]+>/g,' '))}</div></div></div>`}
 function modHTML(m,q){return `<h2 class="modtitle"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="3"/><path d="M16 4v5M16 23v5M4 16h5M23 16h5M8 8l3.5 3.5M20.5 20.5L24 24M24 8l-3.5 3.5M11.5 20.5L8 24"/></svg> ${m.title}<span class="badge">${m.sections.length}节</span></h2><div class="content" style="margin:0 0 6px;color:var(--sub);font-size:13px">${esc(m.desc)}</div>`+m.sections.map(s=>secHTML(s,q)).join("")}
 function cardIco(id){return icoBox(id)}
 function home(){
   const secN=DATA.reduce((a,m)=>a+m.sections.length,0);
   return `<div class="hstats"><div><b>${DATA.length}</b><span>知识模块</span></div><div><b>${secN}</b><span>章节</span></div><div><b>14</b><span>训练计划</span></div></div><div class="card log banner" data-go="log"><div class="top">${icoBox("log")}<span class="idx">★</span></div><div class="t">训练日志 · 固定填报模板</div><div class="d">14 份计划任选 · 每份计划含训练极限输入、逐日逐动作重量/次数/组数/RPE 跟踪 · 按计划原文逻辑生成填报模板</div><div class="n">记下今天这一练 →</div></div><div class="cards">`+
-  DATA.map((m,i)=>`<div class="card" data-go="${m.id}"><div class="top">${cardIco(m.id)}<span class="idx">0${i+1}</span></div><div class="t">${m.title}</div><div class="d">${m.desc}</div><div class="n">${m.sections.length} 个章节 · 查看 →</div></div>`).join("")+
+  DATA.map((m,i)=>{ if(m.id==="plans") return `<div class="card" data-go="log"><div class="top">${cardIco(m.id)}<span class="idx">0${i+1}</span></div><div class="t">训练计划</div><div class="d">14 份原表迁移计划 · 格子表追踪完成度 · 逐组填报自动保存</div><div class="n">进入训练日志 →</div></div>`; return `<div class="card" data-go="${m.id}"><div class="top">${cardIco(m.id)}<span class="idx">0${i+1}</span></div><div class="t">${m.title}</div><div class="d">${m.desc}</div><div class="n">${m.sections.length} 个章节 · 查看 →</div></div>` }).join("")+
   `<div class="card diag" data-go="diag"><div class="top">${icoBox("diag")}<span class="idx">09</span></div><div class="t">个体诊断</div><div class="d">8 步问卷 → 自动生成问题清单与调整方案，支持一键导出 PDF</div><div class="n">开始诊断 · 约5分钟 →</div></div>`+
   `<div class="card qa" data-go="qa"><div class="top">${icoBox("qa")}</div><div><div class="t">Q&A 智能问答</div><div class="d">输入问题，自动匹配资料库内容作为解答</div></div><div class="n">开始提问 →</div></div></div>`}
 function qaView(){return `<h2 class="modtitle"><svg viewBox="0 0 32 32"><path d="M6 6h20v14H14l-6 5v-5H6z"/><path d="M11 13h.6M16 13h.6M21 13h.6"/></svg> Q&A 智能问答</h2>

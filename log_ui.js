@@ -187,12 +187,24 @@ function refreshProgressBar(){
 
 /* ---------- 当日训练表 ---------- */
 const COLHEAD='<div class="thead"><span>#</span><span>计划</span><span>次</span><span>重量</span><span>RPE</span></div>';
+// 扁平化训练日索引（跨周顺序切换）
+function flatDays(t){ const out=[]; t.weeks.forEach((w,wi)=>w.d.forEach((d,di)=>out.push([wi,di]))); return out }
+function switchDay(off){
+  const t=getT(curPlanId); if(!t) return;
+  const fl=flatDays(t);
+  const idx=fl.findIndex(x=>x[0]===curW&&x[1]===curD);
+  const ni=idx+off;
+  if(ni<0||ni>=fl.length){ toast(off>0?'已是最后一个训练日':'已是第一个训练日'); return }
+  pickDay(fl[ni][0],fl[ni][1]);
+}
 function dayHTML(t){
   const w=t.weeks[curW], day=w.d[curD];
   const vars=varsOf(curPlanId);
   const rec=getLogs(curPlanId)[dayKey(curW,curD)]||{sets:{}};
   const st=dayState(curPlanId,curW,curD);
+  const fl=flatDays(t); const idx=fl.findIndex(x=>x[0]===curW&&x[1]===curD);
   let html=`<div class="dayhd"><div><b>${esc(w.n)}</b><span>${esc(day.n)}</span></div><div class="daypr">${st.done}/${st.total} 组${st.complete?' · 已打勾 ✓':''}</div></div>`;
+  html+=`<div class="dnav2"><button class="dn2b" onclick="switchDay(-1)" ${idx<=0?'disabled':''}>‹ 上一训练日</button><span class="dn2pos">${idx+1} / ${fl.length}</span><button class="dn2b" onclick="switchDay(1)" ${idx>=fl.length-1?'disabled':''}>下一训练日 ›</button></div>`;
   html+=COLHEAD;
   day.g.forEach((g,gi)=>{
     html+=`<div class="ghead">${esc(g.n)}</div>`;
