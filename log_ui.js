@@ -540,13 +540,24 @@ function refreshBar(){
 /* Juggernaut 四个模块训练上限速览（自动推算，不可手改） */
 function jmRollHTML(){
   const lifts=[['sq','深蹲'],['bp','卧推'],['dl','硬拉'],['ohp','实力推']];
-  return lifts.map(([k,label])=>{
+  /* 预估 1RM：原始精确值（一位小数），仅供训练者参考 */
+  const chips=lifts.map(([k,label])=>{
+    const w=maxOf(curPlanId,k);
+    const t=getT(curPlanId);
+    const rk=(t&&t.rolling&&t.rolling.repsKeys&&t.rolling.repsKeys[k])||null;
+    const rn=rk?maxOf(curPlanId,rk):null;
+    const e1=(w!==null)?epley1RM(w,rn):null;
+    return `<div class="jrest"><span>${label}</span><b>${e1!==null?e1.toFixed(1)+' kg':'—'}</b></div>`;
+  }).join('');
+  const rows=lifts.map(([k,label])=>{
     const cells=[1,2,3,4].map(m=>{
       const tm=jmTM(curPlanId,m,k);
       return `<div class="jr">模块${m}<b>${tm!==null?fmtW(tm):'—'}</b></div>`;
     }).join('');
     return `<div style="grid-column:1/-1;font-size:10px;color:var(--sub);margin-top:6px">${label} · 各模块训练上限（kg）</div><div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:5px">${cells}</div>`;
   }).join('');
+  return `<div style="grid-column:1/-1;font-size:10px;color:var(--sub)">预估 1RM</div>
+    <div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(2,1fr);gap:5px">${chips}</div>${rows}`;
 }
 
 

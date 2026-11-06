@@ -136,6 +136,8 @@ header{padding:26px 20px 14px;background:var(--bg)}
 .b3r.tot .b3v{color:var(--acc);font-weight:600;font-size:13.5px}
 .b3v.dim{color:var(--sub)}
 .b3t{font-style:normal;font-size:9.5px;color:var(--sub);opacity:.8}
+.jrest{display:flex;justify-content:space-between;align-items:center;background:#181d18;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:11px;color:var(--sub)}
+.jrest b{color:var(--acc);font-size:13px;font-variant-numeric:tabular-nums}
 .searchbar{margin:16px 0 4px;position:relative}
 .searchbar input{width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px 11px 40px;color:var(--txt);font-size:15px;outline:none}
 .searchbar input:focus{border-color:var(--acc)}
