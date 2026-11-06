@@ -202,6 +202,7 @@ function planGuideHTML(cur){
         <div class="pgcol pro"><label>优点</label><ul>${pros||'<li>—</li>'}</ul></div>
         <div class="pgcol con"><label>注意 / 缺点</label><ul>${cons||'<li>—</li>'}</ul></div>
       </div>
+      ${p.src?`<div class="pgsrc">📎 依据：${esc(p.src)}</div>`:''}
     </div>`;
   }).join('');
   return `<div class="lgsec" id="planGuide">

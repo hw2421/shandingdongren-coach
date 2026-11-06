@@ -114,6 +114,7 @@ header{padding:26px 20px 14px;background:var(--bg)}
 .pgcol.con label{color:#e0a06a}
 .pgcol ul{margin:0;padding-left:14px}
 .pgcol li{font-size:10.5px;color:var(--sub);line-height:1.65;word-break:break-word;margin-bottom:2px}
+.pgsrc{margin-top:7px;padding-top:6px;border-top:1px dashed var(--line);font-size:9.5px;color:#6f7a6e;line-height:1.6;word-break:break-word}
 .qnote{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;margin-left:4px;border:1px solid var(--line);border-radius:50%;font-size:8.5px;font-style:normal;color:var(--sub);cursor:pointer;vertical-align:1px;flex:none}
 .qnote:hover{color:var(--acc);border-color:var(--acc)}
 .b3box{background:#101512;border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-top:6px}
