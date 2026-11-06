@@ -96,6 +96,24 @@ header{padding:26px 20px 14px;background:var(--bg)}
 .hbanner .hbt b{color:#fff;font-size:16px;letter-spacing:.5px}
 .hbanner .hbt span{color:var(--acc);font-size:11.5px}
 .searchbar.homeq{margin:18px 0 8px}
+.pguide{background:#101512;border:1px solid var(--line);border-left:3px solid #3b463c;border-radius:10px;padding:10px 12px;margin-top:9px;cursor:pointer;transition:border-color .12s}
+.pguide:hover{border-color:var(--acc)}
+.pguide.on{border-left-color:var(--acc);background:#121a12}
+.pgh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pgh b{color:var(--acc2);font-size:12.5px;line-height:1.4;word-break:break-word}
+.pgh span{color:var(--sub);font-size:10.5px}
+.pgtag{font-style:normal;margin-left:auto;font-size:9.5px;color:var(--acc);border:1px solid var(--acc);border-radius:5px;padding:0 5px;flex:none}
+.pgrow{display:flex;gap:8px;margin-top:6px;align-items:flex-start}
+.pgrow label{flex:none;width:52px;font-size:10px;color:var(--acc);background:#1b231a;border:1px solid var(--line);border-radius:5px;text-align:center;padding:1px 0;line-height:1.6}
+.pgrow p{margin:0;font-size:11px;color:var(--txt);line-height:1.6;word-break:break-word}
+.pgcols{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:7px}
+@media(max-width:560px){.pgcols{grid-template-columns:1fr}}
+.pgcol{background:#0c100c;border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+.pgcol label{display:block;font-size:10px;margin-bottom:3px;font-weight:700}
+.pgcol.pro label{color:#9fd36a}
+.pgcol.con label{color:#e0a06a}
+.pgcol ul{margin:0;padding-left:14px}
+.pgcol li{font-size:10.5px;color:var(--sub);line-height:1.65;word-break:break-word;margin-bottom:2px}
 .qnote{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;margin-left:4px;border:1px solid var(--line);border-radius:50%;font-size:8.5px;font-style:normal;color:var(--sub);cursor:pointer;vertical-align:1px;flex:none}
 .qnote:hover{color:var(--acc);border-color:var(--acc)}
 .b3box{background:#101512;border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-top:6px}
@@ -121,9 +139,9 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .card .top{display:flex;align-items:center;justify-content:space-between}
 .card .icobox{width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center;background:rgba(213,250,117,.08);border:1px solid rgba(213,250,117,.25);border-radius:12px}.card .ico{width:26px;height:26px;stroke:var(--acc);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .card .idx{font-size:22px;font-weight:800;color:#2c352e;font-variant-numeric:tabular-nums}
-.card .t{font-weight:700;margin-top:10px;font-size:15.5px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card .d{color:var(--sub);font-size:12px;margin-top:5px;line-height:1.55;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.card .n{color:var(--acc2);font-size:11.5px;margin-top:auto;padding-top:9px;border-top:1px dashed var(--line)}
+.card .t{font-weight:700;margin-top:10px;font-size:15.5px;line-height:1.35;white-space:normal;word-break:break-word;overflow-wrap:anywhere}
+.card .d{color:var(--sub);font-size:12px;margin-top:5px;line-height:1.55;flex:1;white-space:normal;word-break:break-word;overflow-wrap:anywhere}
+.card .n{color:var(--acc2);font-size:11.5px;margin-top:auto;padding-top:9px;border-top:1px dashed var(--line);white-space:normal;word-break:break-word}
 .card.qa{background:linear-gradient(150deg,#1d2416 0%,var(--card) 60%);border-color:#3d4a2c}
 .card.qa .n{color:var(--acc)}
 .hstats{display:flex;gap:8px;margin-top:14px}
@@ -271,10 +289,10 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .lgri b{font-size:13px;color:var(--acc2)}
 .lgri span{font-size:11.5px;color:var(--sub);line-height:1.5}
 /* 训练日志首页横幅（置顶） */
-.card.log.banner{grid-column:1/-1;margin-top:14px;flex-direction:row;align-items:center;gap:16px;background:linear-gradient(150deg,#122a1d 0%,var(--card) 65%);border-color:#2f6a48}
+.card.log.banner{grid-column:1/-1;margin-top:14px;flex-direction:row;align-items:center;flex-wrap:wrap;gap:4px 12px;background:linear-gradient(150deg,#122a1d 0%,var(--card) 65%);border-color:#2f6a48}
 .card.log.banner .top{flex:none}
-.card.log.banner .t{margin-top:0;font-size:16.5px}
-.card.log.banner .d{flex:none;margin:0;-webkit-line-clamp:2}
+.card.log.banner .t{margin-top:0;font-size:16.5px;flex:none;max-width:100%}
+.card.log.banner .d{flex:1 1 100%;min-width:0;margin:0;white-space:normal}
 .card.log.banner .n{border:none;margin:0 0 0 auto;padding:0;white-space:nowrap;color:var(--green)}
 .lgstatic{cursor:default}
 .lgok{color:var(--green);font-size:11px;border:1px solid rgba(62,207,142,.35);border-radius:5px;padding:1px 6px;margin-left:6px}

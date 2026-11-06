@@ -185,6 +185,29 @@ function logView(){
       </div>
     </div>
     <div class="lgstat"><div><b>${doneDays}</b><span>已完成训练日</span></div><div><b>${Object.keys(allLogs).length}</b><span>有记录计划</span></div><div><b>${PLANS.length}</b><span>计划总数</span></div></div>
+  </div>
+  ${planGuideHTML(cur)}`;
+}
+/* ---------- 计划选择页下方：适合人群 / 使用阶段 / 优劣点 ---------- */
+function planGuideHTML(cur){
+  const rows=PLANS.map(p=>{
+    const on=p.id===cur?' on':'';
+    const pros=(p.pros||[]).map(x=>`<li>${esc(x)}</li>`).join('');
+    const cons=(p.cons||[]).map(x=>`<li>${esc(x)}</li>`).join('');
+    return `<div class="pguide${on}" onclick="openPlan('${p.id}')">
+      <div class="pgh"><b>${esc(p.name)}</b><span>${esc(p.tag)} · ${esc(p.freq||'')}</span>${on?'<i class="pgtag">当前</i>':''}</div>
+      <div class="pgrow"><label>适合人群</label><p>${esc(p.who||'—')}</p></div>
+      <div class="pgrow"><label>使用阶段</label><p>${esc(p.stage||'—')}</p></div>
+      <div class="pgcols">
+        <div class="pgcol pro"><label>优点</label><ul>${pros||'<li>—</li>'}</ul></div>
+        <div class="pgcol con"><label>注意 / 缺点</label><ul>${cons||'<li>—</li>'}</ul></div>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="lgsec" id="planGuide">
+    <div class="lgsh">📋 计划选择指南 <span class="lgpg">适合人群 · 使用阶段 · 优缺点</span></div>
+    <div class="lgnote" style="margin-bottom:8px">按自己的<b>训练年限</b>、<b>每周可练天数</b>、<b>当前阶段（增肌 / 提升力量 / 备赛）</b>三件事来选；点任一张卡片即可直接进入该计划。</div>
+    ${rows}
   </div>`;
 }
 function openPlan(id){
