@@ -37,10 +37,7 @@ DIAG = json.loads((BASE/"diag_data.json").read_text(encoding="utf-8"))
 DIAG_UI = (BASE/"diag_ui.js").read_text(encoding="utf-8")
 PLANDATA = json.loads((BASE/"plan_data.json").read_text(encoding="utf-8"))
 import glob as _glob
-PLANTABLES = {}
-for _f in sorted((BASE/"tables").glob("*.json")):
-    _d = json.loads(_f.read_text(encoding="utf-8"))
-    PLANTABLES[_d["id"]] = _d
+PLANTABLES = json.loads((BASE/"plan_tables.json").read_text(encoding="utf-8"))
 LOG_UI = (BASE/"log_ui.js").read_text(encoding="utf-8")
 
 # ---------- 1. 配图已全部移除（仅保留文字与页码出处） ----------
@@ -277,13 +274,58 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .mvtab th,.mvtab td{border:1px solid var(--line);padding:5px 8px;text-align:left;white-space:nowrap}
 .mvtab th{background:var(--card2);color:var(--acc2);font-weight:600}
 
-.setrow{display:grid;grid-template-columns:26px 1.3fr 84px 1fr 1fr 64px;gap:6px;align-items:center;background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:7px 8px;margin-bottom:6px}
-.setrow .setno{font-size:12px;font-weight:700;color:var(--acc);text-align:center}
-.setrow .setd{font-size:11px;color:var(--sub);line-height:1.4}
-.setrow .setw{font-size:11px;color:var(--sub);white-space:nowrap}
-.setrow .setw b{color:var(--acc);font-size:13px}
-.mvhead{display:flex;flex-direction:column;gap:2px;margin:12px 0 6px;padding-left:8px;border-left:3px solid var(--acc)}
-.mvhead .mvname{font-size:14px;font-weight:700;color:var(--acc2);line-height:1.4}
+/* ===== 训练日志 v5：格子表 + 当日表 ===== */
+.lgstatic{cursor:default}
+.lgok{color:var(--green);font-size:10.5px;border:1px solid rgba(94,216,143,.35);border-radius:5px;padding:1px 6px;margin-left:6px;white-space:nowrap}
+.lgneed{color:#d8b26a;font-size:10.5px;border:1px solid rgba(216,178,106,.35);border-radius:5px;padding:1px 6px;margin-left:6px;white-space:nowrap}
+.lgpg{float:right;font-size:11px;color:var(--acc);font-weight:600;font-variant-numeric:tabular-nums}
+.lgmaxgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
+.lgnote{font-size:11px;color:var(--sub);line-height:1.65;background:var(--card2);border-radius:8px;padding:7px 9px}
+.lgbarsm{height:4px;background:var(--line);border-radius:99px;overflow:hidden;margin:7px 0 10px}
+.lgbarsm i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .3s}
+/* 格子表：紧凑 */
+.gblock{margin-bottom:9px}
+.gbt{font-size:10.5px;color:var(--sub);letter-spacing:.3px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gcells{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.gcell{background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:5px 1px;text-align:center;cursor:pointer;transition:.1s;min-width:0}
+.gcell b{display:block;font-size:11px;color:#a9b3a5;line-height:1.25;font-variant-numeric:tabular-nums}
+.gcell span{display:block;font-size:9px;color:#6d766c;line-height:1.2;margin-top:1px}
+.gcell:active{transform:scale(.94)}
+.gcell.part{border-color:#7d7a3c;background:#242a1c}
+.gcell.part b{color:#e0d67a}
+.gcell.done{background:#344c24;border-color:#6f954e}
+.gcell.done b{color:var(--acc);font-size:13px}
+.gcell.done span{color:#9bb183}
+.gcell.sel{outline:2px solid var(--acc);outline-offset:-1px}
+/* 当日表 */
+.dayhd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:0 0 8px;border-bottom:1px solid var(--line);margin-bottom:2px}
+.dayhd div{display:flex;flex-direction:column;gap:1px;min-width:0}
+.dayhd b{font-size:12.5px;color:var(--acc2);line-height:1.35}
+.dayhd span{font-size:11px;color:var(--sub)}
+.daypr{font-size:11px;color:var(--acc);font-weight:700;white-space:nowrap;flex:none}
+.thead,.trow{display:grid;grid-template-columns:18px 1.55fr 30px 62px 50px;gap:4px;align-items:center}
+.thead{padding:6px 0 5px;font-size:9.5px;color:var(--sub);letter-spacing:.5px;position:sticky;top:0;background:var(--card);z-index:2}
+.thead span:nth-child(4),.thead span:nth-child(5){text-align:center}
+.ghead{font-size:11.5px;font-weight:700;color:var(--acc2);margin:9px 0 3px;padding-left:6px;border-left:2px solid var(--acc);line-height:1.4}
+.trow{padding:5px 0;border-bottom:1px solid #232c26;font-size:11.5px}
+.trow:last-child{border-bottom:0}
+.trow .tno{color:#7a8477;font-size:10px;text-align:center;font-variant-numeric:tabular-nums}
+.trow .tplan{color:#c3ccc0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
+.trow .treps{color:var(--sub);text-align:center;font-size:11px}
+.trow input{width:100%;min-width:0;background:#101512;border:1px solid var(--line);border-radius:6px;padding:6px 2px;color:var(--txt);font-size:12px;text-align:center;outline:none;font-family:inherit;-moz-appearance:textfield}
+.trow input::-webkit-inner-spin-button,.trow input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.trow input:focus{border-color:var(--acc);background:#161d15}
+.trow.done .tno{color:var(--acc);font-weight:700}
+.trow.done .tplan{color:var(--acc2)}
+.trow.done input{background:#1d2a17;border-color:#4d6b39;color:var(--acc2)}
+/* 保存提示 */
+.lgtoast{position:fixed;left:50%;bottom:86px;transform:translate(-50%,14px);background:#2a3a22;border:1px solid var(--acc);color:var(--acc);font-size:12.5px;padding:8px 16px;border-radius:99px;opacity:0;pointer-events:none;transition:.22s;z-index:99;white-space:nowrap;box-shadow:0 6px 22px rgba(0,0,0,.5)}
+.lgtoast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:400px){
+  .gcells{grid-template-columns:repeat(5,1fr)}
+  .thead,.trow{grid-template-columns:16px 1.5fr 26px 56px 44px;gap:3px}
+  .lgmaxgrid{grid-template-columns:1fr 1fr}
+}
 /* 计划页 */
 .ptags{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px}
 .ptag{font-size:11px;color:var(--acc2);background:rgba(213,250,117,.1);border:1px solid rgba(213,250,117,.25);border-radius:6px;padding:2px 8px}
