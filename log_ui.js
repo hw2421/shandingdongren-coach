@@ -50,11 +50,16 @@ function epley1RM(kg, reps){
 function jmTM(pid, mod, lift){
   const t=getT(pid); if(!t) return null;
   const rm=maxOf(pid, lift); if(rm===null) return null;
-  /* 模块1训练上限 = 估算 1RM × 90%；估算 1RM 由「当前重量 + 极限次数」按 Epley 换算 */
+  /* 模块1训练上限：
+     ① 预估极限 = 当前重量 + 当前重量×极限次数×0.0333（填 1 次时即当前重量×1.0333）
+     ② 预估极限先取 2.5kg 整数倍
+     ③ 模块1 = 预估极限 × 90%，再取 2.5kg 整数倍（向下）
+     例：深蹲 170 × 1 次 → 175.7 → 取整 177.5 → ×0.9 = 159.75 → 160 */
   const rk=(t.rolling&&t.rolling.repsKeys&&t.rolling.repsKeys[lift])||null;
   const rn=rk?maxOf(pid, rk):null;
   const e1=epley1RM(rm, rn);
-  const base = r25((e1===null?rm:e1)*0.9);
+  const est = Math.ceil((e1===null? rm : e1)/2.5)*2.5;   // 预估极限向上取 2.5 倍数
+  const base = r25(est*0.9);                             // ×90% 后取 2.5 倍数
   if(mod<=1) return base;
   let tm=base;
   /* 每个模块的「第3周（转化期）」= 该模块第3周全，主项末组标准次数见下表 */
@@ -64,7 +69,11 @@ function jmTM(pid, mod, lift){
     const wi=(m-1)*4+2;                  // 第 m 模块的第3周索引
     const w=t.weeks[wi]; if(!w) break;
     let got=null, found=false;
-    const liftRe=new RegExp(lift==='sq'?'Squat|深蹲':lift==='bp'?'Bench|卧推':'Deadlift|硬拉','i');
+    const liftRe=new RegExp(
+      lift==='sq'?'Squat|深蹲':
+      lift==='bp'?'Bench|卧推':
+      lift==='ohp'?'OHP|Overhead|推举|实力推':
+      'Deadlift|硬拉','i');
     outer:
     for(let di=0;di<w.d.length;di++){
       for(let gi=0;gi<w.d[di].g.length;gi++){
@@ -282,6 +291,16 @@ function bigThree(pid){
       }
     }
   });
+  /* Juggernaut 输入的是「当前重量」而非极限：按同一规则换算成预估极限作为基准 */
+  if(t.rolling && t.rolling.repsKeys){
+    ['sq','bp','dl'].forEach(k=>{
+      const w=maxOf(pid,k); if(w===null) return;
+      const rk=t.rolling.repsKeys[k];
+      const rn=rk?maxOf(pid,rk):null;
+      const e1=epley1RM(w,rn);
+      base[k]= Math.ceil((e1===null? w : e1)/2.5)*2.5;   /* 与模块1同一口径：预估极限向上取 2.5 倍 */
+    });
+  }
   /* 从已完成日志中取各动作最佳 e1RM（Epley：kg×(1+次数/30)）
      只统计「主项及其直接变式」，辅助/孤立动作不计入三大项预测 */
   const GRP={
