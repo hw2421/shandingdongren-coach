@@ -24,12 +24,12 @@ PDFS = {
 # 统一按出处页面整页截图，不再使用预裁图
 
 MODULES = [
-    ("principles",     "训练原理",          "超负荷、专项性、疲劳管理、RPE自主调节、肌肥大机制等底层规律", "module_principles.md"),
-    ("bigthree",       "三大项动作框架",    "深蹲/卧推/硬拉技术框架 · 图示详解 · 分歧观点对照表（标注页码出处）", "module_bigthree_v2.md"),
-    ("troubleshooting","动作问题排查",      "症状→原因→调整：三大项常见错误与矫正方案速查", "module_troubleshooting.md"),
-    ("plans",          "训练计划设置原理",  "计划设计原理 + 14份上传计划逐一分析与横向对比（RTS系列/Juggernaut/腰王/Calgary/GZCL/SSTT/Russwole/帕金斯/古斯塔夫/CATS/斯莫洛夫）", "module_programming.md|module_plans.md|module_plans_b.md"),
+    ("bigthree",       "三大项动作框架",    "动作三分类 · 深蹲/卧推/硬拉的设置·阶段结构·变式推导 · 四类参数排查法", "module_bigthree_v4.md"),
+    ("troubleshooting","动作问题排查",      "症状→归类→归因→选手段四步流程 · 三大项逐条症状速查 · 一节课排查流程", "module_tshoot_v4.md"),
+    ("principles",     "训练原理",          "七大核心原理 · 专项性/超负荷/疲劳管理/SRA/变式/阶段增益/个体化 · MEV-MRV · RPE-RIR · 五大流派对照", "module_principles_v4.md"),
+    ("plans",          "训练计划设置原理",  "八步设计法 · 中周期长度 · 超负荷与波动组合 · 弱点变式配对 · 14份计划横向对照", "module_programming_v4.md"),
     ("plateau",        "平台期突破",        "停滞原因四类诊断清单与训练/恢复端突破策略", "module_plateau.md"),
-    ("nutrition",      "营养",              "热量与宏量营养素设定、体重解读与调整规则、补剂", "module_nutrition.md"),
+    ("nutrition",      "营养",              "能量平衡与TDEE四组成 · 热量/蛋白/脂肪/碳水四步定序 · 周期分段策略 · 比赛日 · 补剂证据分级", "module_nutrition_v4.md"),
     ("rehab",          "伤病排查及康复",    "疼痛认知、各部位问题自查、重返训练原则与预防", "module_rehab.md"),
 ]
 
@@ -57,13 +57,16 @@ def parse_module(files):
     sections=[]
     for fname in files.split("|"):
         raw=(BASE/fname).read_text(encoding="utf-8")
+        # 去掉首部 "# 一级标题" 行（模块名已由卡片/页头显示），避免多出一个"概述"节
+        raw=re.sub(r"\A\s*#\s+[^\n]*\n", "", raw)
         parts=re.split(r"\n(?=## )",raw)
         for part in parts:
             part=part.strip()
             if not part: continue
             m=re.match(r"##\s+(.*)",part)
-            title=m.group(1).strip().strip("#").strip() if m else "概述"
+            title=m.group(1).strip().strip("#").strip() if m else "使用说明与资料来源"
             body=part[m.end():].strip() if m else part
+            if not body: continue
             sections.append({"t":title,"h":render(body)})
     return sections
 
@@ -274,17 +277,15 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .mvtab th,.mvtab td{border:1px solid var(--line);padding:5px 8px;text-align:left;white-space:nowrap}
 .mvtab th{background:var(--card2);color:var(--acc2);font-weight:600}
 
-.vrec{margin:14px 0 4px;background:rgba(94,216,143,.06);border:1px solid rgba(94,216,143,.25);border-radius:10px;padding:10px 12px}
-.vrec b{display:block;font-size:12.5px;color:var(--green);margin-bottom:6px}
-.vrec a{display:block;font-size:12.5px;color:var(--blue);text-decoration:none;padding:4px 0;border-bottom:1px dashed var(--line);line-height:1.5}
-.vrec a:last-of-type{border-bottom:none}
-.vrec i{display:block;font-size:10px;color:var(--sub);font-style:normal;margin-top:5px}
 /* ===== 训练日志 v5：格子表 + 当日表 ===== */
 .lgstatic{cursor:default}
 .lgok{color:var(--green);font-size:10.5px;border:1px solid rgba(94,216,143,.35);border-radius:5px;padding:1px 6px;margin-left:6px;white-space:nowrap}
 .lgneed{color:#d8b26a;font-size:10.5px;border:1px solid rgba(216,178,106,.35);border-radius:5px;padding:1px 6px;margin-left:6px;white-space:nowrap}
 .lgpg{float:right;font-size:11px;color:var(--acc);font-weight:600;font-variant-numeric:tabular-nums}
 .lgmaxgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
+.lgmaxgrid.three{grid-template-columns:repeat(3,1fr)}
+.lgmaxgrid.three .lgf label{font-size:9.5px}
+.lgmaxgrid.three .lgmaxI{padding:6px 4px;font-size:12px}
 .lgnote{font-size:11px;color:var(--sub);line-height:1.65;background:var(--card2);border-radius:8px;padding:7px 9px;word-break:break-all;overflow-wrap:anywhere}
 .lgbarsm{height:4px;background:var(--line);border-radius:99px;overflow:hidden;margin:7px 0 10px}
 .lgbarsm i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .3s}
@@ -308,10 +309,14 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .dayhd b{font-size:12.5px;color:var(--acc2);line-height:1.35}
 .dayhd span{font-size:11px;color:var(--sub)}
 .daypr{font-size:11px;color:var(--acc);font-weight:700;white-space:nowrap;flex:none}
-.thead,.trow{display:grid;grid-template-columns:18px 1.55fr 30px 62px 50px;gap:4px;align-items:center}
-.thead{padding:6px 0 5px;font-size:9.5px;color:var(--sub);letter-spacing:.5px;position:sticky;top:0;background:var(--card);z-index:2}
-.thead span:nth-child(4),.thead span:nth-child(5){text-align:center}
-.ghead{font-size:11.5px;font-weight:700;color:var(--acc2);margin:9px 0 3px;padding-left:6px;border-left:2px solid var(--acc);line-height:1.4}
+.thead,.trow{display:grid;grid-template-columns:17px minmax(0,1fr) 22px 54px 42px 42px;gap:3px;align-items:center}
+.thead{padding:6px 0 5px;font-size:9.5px;color:var(--sub);letter-spacing:.4px;position:sticky;top:0;background:var(--card);z-index:2}
+.thead span:nth-child(3),.thead span:nth-child(4),.thead span:nth-child(5),.thead span:nth-child(6){text-align:center}
+.ghead{font-size:11.5px;font-weight:700;color:var(--acc2);margin:9px 0 3px;padding-left:6px;border-left:2px solid var(--acc);line-height:1.4;display:flex;align-items:center;gap:6px}
+.ghead span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ghead em{font-style:normal;font-weight:400;font-size:10px;color:var(--sub);background:#1b231a;border:1px solid var(--line);border-radius:5px;padding:0 5px;flex:none}
+.ghead.main{border-left-color:#e0b64a}
+.ghead .mtag{font-style:normal;font-size:9.5px;color:#e0b64a;border:1px solid rgba(224,182,74,.45);background:rgba(224,182,74,.1);border-radius:5px;padding:1px 5px;flex:none;font-weight:600}
 .trow{padding:5px 0;border-bottom:1px solid #232c26;font-size:11.5px}
 .trow:last-child{border-bottom:0}
 .trow .tno{color:#7a8477;font-size:10px;text-align:center;font-variant-numeric:tabular-nums}
@@ -329,11 +334,14 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .dnav2 button:active{opacity:.8}
 .dnav2 button:disabled{opacity:.3}
 .dnav2 span{font-size:10px;color:var(--sub);flex:none;font-variant-numeric:tabular-nums}
+.daydone{margin:8px 0 0}
+.btnDone{width:100%;background:rgba(213,250,117,.12);border:1px solid var(--acc);color:var(--acc);border-radius:9px;padding:10px;font-size:12.5px;font-weight:700;font-family:inherit;cursor:pointer}
+.btnDone:active{transform:scale(.99);opacity:.85}
 .lgtoast{position:fixed;left:50%;bottom:86px;transform:translate(-50%,14px);background:#2a3a22;border:1px solid var(--acc);color:var(--acc);font-size:12.5px;padding:8px 16px;border-radius:99px;opacity:0;pointer-events:none;transition:.22s;z-index:99;white-space:nowrap;box-shadow:0 6px 22px rgba(0,0,0,.5)}
 .lgtoast.on{opacity:1;transform:translate(-50%,0)}
 @media(max-width:400px){
   .gcells{grid-template-columns:repeat(5,1fr)}
-  .thead,.trow{grid-template-columns:16px 1.5fr 26px 56px 44px;gap:3px}
+  .thead,.trow{grid-template-columns:15px minmax(0,1fr) 20px 50px 38px 38px;gap:2px}
   .lgmaxgrid{grid-template-columns:1fr 1fr}
 }
 /* 计划页 */
@@ -369,7 +377,7 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
       <svg class="logo" viewBox="0 0 48 48" fill="none" stroke="#d5fa75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5l16 8.5V25c0 9.5-7 15.5-16 18C15 40.5 8 34.5 8 25V13.5z"/><path d="M17 27l4.5-5.5 3.5 3.5 6-8"/></svg>
       <h1>山顶洞人<span>力训教练</span></h1>
     </div>
-    <div class="tagline">力量训练知识体系 · 综合 20 份专业资料 · 14 份训练计划 · 支持智能问答</div>
+    <div class="tagline">力量训练知识体系 · 综合 16 份专业资料 · 14 份训练计划 · 支持智能问答</div>
     <div class="searchbar"><input id="q" placeholder="搜索：低杆深蹲、平台期、腰痛、MEV…" /></div>
   </header>
   <main id="view"></main>
@@ -402,32 +410,7 @@ nav.addEventListener("click",e=>{const d=e.target.closest("[data-go]");if(d)go(d
 function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
 function hl(html,q){if(!q)return html;try{const re=new RegExp(q.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&"),"g");return html.replace(re,m=>`<span class="hit">${m}</span>`)}catch(e){return html}}
 function isDiscord(t){return /分歧|对照表/.test(t)}
-/* ===== 动作教学视频推荐 ===== */
-const MOV_VIDEOS=[
- ["深蹲",[["断头台BTS · 如何深蹲（终极指南）","https://search.bilibili.com/all?keyword=%E6%96%AD%E5%A4%B4%E5%8F%B0BTS%20%E6%B7%B1%E8%B9%B2%E6%95%99%E5%AD%A6"],["Alan Thrall · How to Squat（中字）","https://search.bilibili.com/all?keyword=Alan%20Thrall%20squat%20%E4%B8%AD%E5%AD%97"],["Starting Strength · 低杆深蹲原理","https://search.bilibili.com/all?keyword=%E4%BD%8E%E6%9D%86%E6%B7%B1%E8%B9%B2%20%E6%95%99%E5%AD%A6"]]],
- ["卧推",[["断头台BTS · 如何卧推（终极指南）","https://search.bilibili.com/all?keyword=%E6%96%AD%E5%A4%B4%E5%8F%B0BTS%20%E5%8D%A7%E6%8E%A8%E6%95%99%E5%AD%A6"],["Alan Thrall · How to Bench Press（中字）","https://search.bilibili.com/all?keyword=Alan%20Thrall%20bench%20%E4%B8%AD%E5%AD%97"],["Jeff Nippard · 卧推技术细节","https://search.bilibili.com/all?keyword=Jeff%20Nippard%20%E5%8D%A7%E6%8E%A8%20%E4%B8%AD%E5%AD%97"]]],
- ["硬拉",[["断头台BTS · 如何硬拉（终极指南）","https://search.bilibili.com/all?keyword=%E6%96%AD%E5%A4%B4%E5%8F%B0BTS%20%E7%A1%AC%E6%8B%89%E6%95%99%E5%AD%A6"],["Alan Thrall · How to Deadlift（中字）","https://search.bilibili.com/all?keyword=Alan%20Thrall%20deadlift%20%E4%B8%AD%E5%AD%97"],["Starting Strength · 传统硬拉5步法","https://search.bilibili.com/all?keyword=Starting%20Strength%20%E7%A1%AC%E6%8B%89%20%E4%B8%AD%E5%AD%97"]]],
- ["相扑硬拉",[["断头台BTS · 相扑硬拉教学","https://search.bilibili.com/all?keyword=%E7%9B%B8%E5%86%92%E7%A1%AC%E6%8B%89%20%E6%95%99%E5%AD%A6"],["Jeff Nippard · 相扑vs传统硬拉","https://search.bilibili.com/all?keyword=Jeff%20Nippard%20%E7%9B%B8%E5%86%92%E7%A1%AC%E6%8B%89%20%E4%B8%AD%E5%AD%97"]]],
- ["实力推",[["Alan Thrall · How to OHP（中字）","https://search.bilibili.com/all?keyword=Alan%20Thrall%20overhead%20press%20%E4%B8%AD%E5%AD%97"],["断头台BTS · 实力推教学","https://search.bilibili.com/all?keyword=%E5%AE%9E%E5%8A%9B%E6%8E%A8%20%E6%95%99%E5%AD%A6"]]],
- ["罗马尼亚硬拉",[["Jeff Nippard · RDL 技术（中字）","https://search.bilibili.com/all?keyword=Jeff%20Nippard%20RDL%20%E4%B8%AD%E5%AD%97"],["Alan Thrall · How to RDL","https://search.bilibili.com/all?keyword=Alan%20Thrall%20romanian%20deadlift"]]],
- ["前蹲",[["断头台BTS · 前蹲教学","https://search.bilibili.com/all?keyword=%E5%89%8D%E8%B9%B2%20%E6%95%99%E5%AD%A6"],["Alan Thrall · How to Front Squat","https://search.bilibili.com/all?keyword=Alan%20Thrall%20front%20squat"]]],
- ["引体",[["Jeff Nippard · 引体向上完整教学（中字）","https://search.bilibili.com/all?keyword=Jeff%20Nippard%20pull%20up%20%E4%B8%AD%E5%AD%97"],["引体向上 从0到1教学","https://search.bilibili.com/all?keyword=%E5%BC%95%E4%BD%93%E5%90%91%E4%B8%8A%20%E6%95%99%E5%AD%A6"]]],
- ["划船",[["Alan Thrall · 杠铃划船教学","https://search.bilibili.com/all?keyword=Alan%20Thrall%20barbell%20row%20%E4%B8%AD%E5%AD%97"],["潘德雷划船 Pendlay Row","https://search.bilibili.com/all?keyword=Pendlay%20Row%20%E6%95%99%E5%AD%A6"]]],
- ["臀",[["Jeff Nippard · 臀推 Hip Thrust（中字）","https://search.bilibili.com/all?keyword=Jeff%20Nippard%20hip%20thrust%20%E4%B8%AD%E5%AD%97"],["Bret Contreras · 臀部训练科学","https://search.bilibili.com/all?keyword=%E8%87%80%E6%8E%A8%20%E6%95%99%E5%AD%A6"]]],
- ["保加利亚",[["Jeff Nippard · 保加利亚分腿蹲（中字）","https://search.bilibili.com/all?keyword=Jeff%20Nippard%20bulgarian%20split%20squat%20%E4%B8%AD%E5%AD%97"]]],
- ["臂屈伸",[["Alan Thrall · 双杠臂屈伸","https://search.bilibili.com/all?keyword=%E5%8F%8C%E6%9D%A0%E8%87%82%E5%B1%88%E4%BC%B8%20%E6%95%99%E5%AD%A6"]]],
-];
-function movLinks(text){
-  if(!text) return '';
-  let out='';
-  for(const [kw,vs] of MOV_VIDEOS){
-    if(text.indexOf(kw)<0) continue;
-    out+=`<div class="vrec"><b>🎬 「${kw}」教学视频推荐</b>`+vs.map(v=>`<a href="${v[1]}" target="_blank" rel="noopener">${v[0]} ↗</a>`).join('')+`<i>点按将打开站内搜索页，推荐优先观看高播放量的中文教学</i></div>`;
-    if(out.length>900) break;   // 每节最多约3个动作
-  }
-  return out;
-}
-function secHTML(s,q){const open=isDiscord(s.t)?" open":"";return `<div class="sec${open}"><div class="hd" onclick="this.parentElement.classList.toggle('open')"><span>${esc(s.t)}</span><span class="arr">▶</span></div><div class="bd"><div class="content">${hl(s.h,q)}${movLinks(s.t+' '+s.h.replace(/<[^>]+>/g,' '))}</div></div></div>`}
+function secHTML(s,q){const open=isDiscord(s.t)?" open":"";return `<div class="sec${open}"><div class="hd" onclick="this.parentElement.classList.toggle('open')"><span>${esc(s.t)}</span><span class="arr">▶</span></div><div class="bd"><div class="content">${hl(s.h,q)}</div></div></div>`}
 function modHTML(m,q){return `<h2 class="modtitle"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="3"/><path d="M16 4v5M16 23v5M4 16h5M23 16h5M8 8l3.5 3.5M20.5 20.5L24 24M24 8l-3.5 3.5M11.5 20.5L8 24"/></svg> ${m.title}<span class="badge">${m.sections.length}节</span></h2><div class="content" style="margin:0 0 6px;color:var(--sub);font-size:13px">${esc(m.desc)}</div>`+m.sections.map(s=>secHTML(s,q)).join("")}
 function cardIco(id){return icoBox(id)}
 function home(){

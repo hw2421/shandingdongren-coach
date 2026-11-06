@@ -1,4 +1,5 @@
-// ================= 训练日志 v6：计划首页 + 紧凑格子表 + 当日逐组填报（自动保存） =================
+// ================= 训练日志 v7 =================
+// 规则：重量最小单位 2.5kg 四舍五入；实际重量默认=计划重量；增列实际次数；严格按组数逐行展开
 let curPlanId = null, curW = 0, curD = 0, showDay = false;
 
 /* ---------- 存储 ---------- */
@@ -13,10 +14,19 @@ function getLogs(pid){ const all=jget('sddr_logs',{}); return all[pid]||{} }
 function setLogs(pid,o){ const all=jget('sddr_logs',{}); all[pid]=o; jset('sddr_logs', all) }
 function getT(id){ return PT[id]||null }
 
+/* ---------- 重量取整：最小单位 2.5kg，四舍五入 ---------- */
+function r25(x){ if(!isFinite(x)) return null; return Math.round(x/2.5)*2.5 }
+function fmtW(x){ if(x===null||x===undefined||!isFinite(x)) return ''; const v=Math.round(x*10)/10; return (v%1===0? v.toFixed(0): v.toFixed(1)); }
+
 /* ---------- 配重换算 ---------- */
 function varsOf(pid){
   const mx=getMaxes(pid), t=getT(pid), v={};
-  if(t) t.inputs.forEach(i=>{ const n=parseFloat(mx[i.k]); if(isFinite(n)) v[i.k]=n });
+  if(t) t.inputs.forEach(i=>{
+    /* 用户填过的优先；未填则用计划自带默认值，保证首次进入即可显示计划重量 */
+    let n=parseFloat(mx[i.k]);
+    if(!isFinite(n) && i.def!==undefined && i.def!==null) n=parseFloat(i.def);
+    if(isFinite(n)) v[i.k]=n;
+  });
   return v;
 }
 const CALC_CACHE={};
@@ -28,28 +38,50 @@ function calcW(expr, vars){
   if(ck in CALC_CACHE) return CALC_CACHE[ck];
   let out=null;
   try{
-    const vs=ks.map(k=>vars[k]);
-    const fn=Function('"use strict";const ['+ks.join(',')+']=['+vs.join(',')+'];return ('+expr+')');
-    const r=fn();
-    if(typeof r==='number'&&isFinite(r)) out=Math.round(r*10)/10;
+    /* r25 必须显式注入作用域，否则表达式里的 r25(...) 会抛 ReferenceError */
+    const fn=Function('r25',...ks,'"use strict";return ('+expr+')');
+    const r=fn(r25, ...ks.map(k=>vars[k]));
+    if(typeof r==='number'&&isFinite(r)&&r>0) out=r25(r);
   }catch(e){ out=null }
   CALC_CACHE[ck]=out; return out;
 }
-// 计划列：只显示换算后的重量或处方文字，绝不显示公式
+
+/* ---------- 单个 set 的计划值 ---------- */
+function planWeightOf(set, vars){
+  if(set.n!==null && set.n!==undefined && isFinite(set.n)) return r25(+set.n);
+  if(set.e){ return calcW(set.e, vars); }
+  return null;
+}
+// 计划列展示：重量 / 仅处方文字（绝不显示公式与计算过程）
 function planText(set, vars){
-  if(set.n!==null && set.n!==undefined) return set.n+' kg';
-  if(set.e){ const v=calcW(set.e, vars); return v!==null ? v+' kg' : '待填极限' }
-  return set.t || '—';
+  const w=planWeightOf(set,vars);
+  if(w!==null) return fmtW(w)+' kg';
+  if(set.e) return '待填极限';
+  return set.d || set.t || '—';
+}
+// 次数字段：优先 r，其次 d 里抽取
+function repsOf(set){
+  const r=set.r;
+  if(r!==null && r!==undefined && String(r).trim()!=='') return String(r).trim();
+  const m=String(set.d||'').match(/^\s*(\S+)/);
+  return m? m[1] : '';
 }
 
-/* ---------- 完成判定 ---------- */
-function isSetDone(lg){ return !!lg && lg.kg!=='' && lg.kg!=null && isFinite(+lg.kg) && +lg.kg>0 }
+/* ---------- 完成判定：重量+实际次数都已填 ---------- */
+function isSetDone(lg){
+  if(!lg) return false;
+  const kg=+lg.kg, reps=+lg.reps;
+  /* 自重/自选重量动作记 kg=0 也算完成（只看实次） */
+  return isFinite(kg) && kg>=0 && isFinite(reps) && reps>0;
+}
 function dayKey(wi,di){ return wi+'-'+di }
 function dayState(pid, wi, di){
   const t=getT(pid); if(!t) return {total:0,done:0,complete:false,partial:false};
+  const w=t.weeks[wi]; if(!w) return {total:0,done:0,complete:false,partial:false};
+  const day=w.d[di]; if(!day) return {total:0,done:0,complete:false,partial:false};
   const rec=getLogs(pid)[dayKey(wi,di)];
   let total=0, done=0;
-  t.weeks[wi].d[di].g.forEach((g,gi)=>g.s.forEach((s,si)=>{ total++; if(rec&&rec.sets&&isSetDone(rec.sets[gi+'_'+si])) done++ }));
+  day.g.forEach((g,gi)=>g.s.forEach((s,si)=>{ total++; if(rec&&rec.sets&&isSetDone(rec.sets[gi+'_'+si])) done++ }));
   return {total, done, complete: total>0 && done===total, partial: done>0 && done<total};
 }
 function planProgress(pid){
@@ -99,18 +131,18 @@ function planView(){
   if(!p||!t) return logView();
   const mx=getMaxes(p.id);
   const seen=new Set(); const inputs=t.inputs.filter(i=>{ if(seen.has(i.k))return false; seen.add(i.k); return true });
-  const allFilled=inputs.every(i=>mx[i.k]!==undefined && mx[i.k]!=='');
+  const allFilled=inputs.length>0 && inputs.every(i=>mx[i.k]!==undefined && mx[i.k]!=='');
   const pr=planProgress(p.id);
   return `<div class="back" onclick="go('log')">← 训练日志</div>
   <h2 class="modtitle">${icoBoxInline('log')} ${esc(p.name)}</h2>
   <div class="ptags"><span class="ptag">${p.tag}</span><span class="ptag">${p.weeks}</span><span class="ptag">${p.freq}</span></div>
 
   <div class="lgsec">
-    <div class="lgsh">🏋️ 训练极限 ${allFilled?'<span class="lgok">已保存 · 已换算 ✓</span>':'<span class="lgneed">填写后自动换算</span>'}</div>
-    <div class="lgmaxgrid">${inputs.map(i=>`
-      <div class="lgf"><label>${esc(i.label)}</label><input type="number" step="2.5" min="0" class="lgmaxI" data-k="${esc(i.k)}" value="${mx[i.k]!==undefined?mx[i.k]:''}" placeholder="kg" onchange="saveMaxAuto()"></div>`).join('')}
+    <div class="lgsh">🏋️ 首次训练极限 ${allFilled?'<span class="lgok">已保存 · 已换算 ✓</span>':'<span class="lgneed">填写一次即可，后续自动换算</span>'}</div>
+    <div class="lgmaxgrid${inputs.length>2?' three':''}">${inputs.map(i=>`
+      <div class="lgf"><label>${esc(i.label)}</label><input type="number" step="2.5" min="0" class="lgmaxI" data-k="${esc(i.k)}" value="${mx[i.k]!==undefined?mx[i.k]:(i.def!==undefined?i.def:'')}" placeholder="kg" onchange="saveMaxAuto()"></div>`).join('')}
     </div>
-    ${t.calcNote?`<div class="lgnote">📐 ${esc(t.calcNote)}</div>`:''}
+    <div class="lgnote" style="margin-top:8px">📐 首次填一次极限即可，之后按计划表逻辑自动换算，全部取 2.5kg 整数倍。</div>
   </div>
 
   <div class="lgsec" id="gridSec">
@@ -124,7 +156,7 @@ function planView(){
     <div id="dayBox">${showDay?dayHTML(t):'<div class="lgnone">点击上方任一训练日格子，查看并填报当日训练</div>'}</div>
   </div>
 
-  ${p.sections.map(s=>`<div class="sec"><div class="hd" onclick="this.parentElement.classList.toggle('open')"><span>📋 ${esc(s[0])}</span><span class="arr">▶</span></div><div class="bd"><div class="content"><p>${esc(s[1])}</p></div></div></div>`).join('')}`;
+  ${(p.sections||[]).map(s=>`<div class="sec"><div class="hd" onclick="this.parentElement.classList.toggle('open')"><span>📋 ${esc(s[0])}</span><span class="arr">▶</span></div><div class="bd"><div class="content"><p>${esc(s[1])}</p></div></div></div>`).join('')}`;
 }
 
 /* ---------- 格子表（极紧凑：每周期一行） ---------- */
@@ -160,7 +192,7 @@ function saveMaxAuto(){
   setMaxes(p.id,o);
   Object.keys(CALC_CACHE).forEach(k=>delete CALC_CACHE[k]);
   const sh=document.querySelector('.lgsec .lgsh');
-  if(sh) sh.innerHTML='🏋️ 训练极限 <span class="lgok">已保存 · 已换算 ✓</span>';
+  if(sh) sh.innerHTML='🏋️ 首次训练极限 <span class="lgok">已保存 · 已换算 ✓</span>';
   const t=getT(p.id);
   const gb=document.getElementById('gridBox'); if(gb) gb.innerHTML=gridHTML(t);
   if(showDay){ const box=document.getElementById('dayBox'); if(box) box.innerHTML=dayHTML(t) }
@@ -173,7 +205,7 @@ function refreshBar(){
   const bar=document.querySelector('.lgbarsm i'); if(bar) bar.style.width=pr.pct+'%';
 }
 
-/* ---------- 当日训练（同名动作连续合并，每组一行） ---------- */
+/* ---------- 当日训练 ---------- */
 function flatDays(t){ const out=[]; t.weeks.forEach((w,wi)=>w.d.forEach((d,di)=>out.push([wi,di]))); return out }
 function switchDay(off){
   const t=getT(curPlanId); if(!t) return;
@@ -183,6 +215,33 @@ function switchDay(off){
   if(ni<0||ni>=fl.length){ toast(off>0?'已是最后一个训练日':'已是第一个训练日'); return }
   pickDay(fl[ni][0],fl[ni][1]);
 }
+
+// 合并同名动作：Russwole 按「首列动作＝主项」优先排第一，其余保持原序；且不显示「N 组」
+const MAIN_LIFTS=['深蹲','卧推','硬拉','前蹲','相扑硬拉'];
+function buildBlocks(day){
+  const isRuss = curPlanId==='russwole';
+  const blocks=[];
+  day.g.forEach((g,gi)=>{
+    const last=blocks[blocks.length-1];
+    if(last && last.n===g.n){
+      g.s.forEach((s,si)=>last.sets.push({s,gi,si}));
+    } else {
+      blocks.push({n:g.n, sets:g.s.map((s,si)=>({s,gi,si}))});
+    }
+  });
+  if(isRuss){
+    // 首列动作作为主项：同名块合并为一块并置于最前
+    const main=blocks[0]? blocks[0].n : null;
+    if(main){
+      const merged=blocks.filter(b=>b.n===main).sort((a,b)=>a.sets[0].gi-b.sets[0].gi);
+      const rest=blocks.filter(b=>b.n!==main);
+      const first={n:main, sets:[].concat(...merged.map(b=>b.sets)), main:true};
+      return [first].concat(rest);
+    }
+  }
+  return blocks;
+}
+
 function dayHTML(t){
   const w=t.weeks[curW], day=w.d[curD];
   const vars=varsOf(curPlanId);
@@ -191,33 +250,72 @@ function dayHTML(t){
   const fl=flatDays(t), idx=fl.findIndex(x=>x[0]===curW&&x[1]===curD);
   let html=`<div class="dayhd"><div><b>${esc(w.n)}</b><span>${esc(day.n)}</span></div><div class="daypr">${st.done}/${st.total} 组${st.complete?' · 已打勾 ✓':''}</div></div>`;
   html+=`<div class="dnav2"><button onclick="switchDay(-1)" ${idx<=0?'disabled':''}>‹ 上一训练日</button><span>${idx+1} / ${fl.length}</span><button onclick="switchDay(1)" ${idx>=fl.length-1?'disabled':''}>下一训练日 ›</button></div>`;
-  html+=`<div class="thead"><span>#</span><span>计划</span><span>次</span><span>重量</span><span>RPE</span></div>`;
-  // 合并连续同名动作
-  const blocks=[];
-  day.g.forEach((g,gi)=>{
-    const last=blocks[blocks.length-1];
-    const same=last && last.n===g.n;
-    if(same){ g.s.forEach((s,si)=>last.sets.push({s,gi,si})); }
-    else blocks.push({n:g.n, sets:g.s.map((s,si)=>({s,gi,si}))});
-  });
+  html+=`<div class="thead thead4"><span>#</span><span>计划</span><span>次</span><span>重量</span><span>实次</span><span>RPE</span></div>`;
+
+  const blocks=buildBlocks(day);
+  const rus=curPlanId==='russwole';
   blocks.forEach(bk=>{
-    html+=`<div class="ghead"><span>${esc(bk.n)}</span><em>${bk.sets.length}组</em></div>`;
+    const multi=bk.sets.length>1;
+    /* 组数严格按计划表的 1×N 解读为「1 组做 N 次」，逐行展开；Russwole 不在动作后标组数 */
+    const badge=(rus||!multi)?'':`<em>${bk.sets.length} 组</em>`;
+    html+=`<div class="ghead${bk.main?' main':''}"><span>${esc(bk.n)}</span>${bk.main?'<i class="mtag">主项</i>':''}${badge}</div>`;
     bk.sets.forEach((it,n)=>{
       const gi=it.gi, si=it.si, s=it.s;
       const k=gi+'_'+si, lg=rec.sets[k]||{};
+      const pw=planWeightOf(s,vars);
+      const reps=repsOf(s);
+      const defKg=(pw!==null)?fmtW(pw):'';
+      const kgVal=(lg.kg!==undefined&&lg.kg!==null?lg.kg:'');
+      /* 实次默认＝计划次数，用户也可改；只改实次不会覆盖计划 */
+      const repsVal=(lg.reps!==undefined?lg.reps:'');
       html+=`<div class="trow${isSetDone(lg)?' done':''}">
         <span class="tno">${n+1}</span>
         <span class="tplan">${esc(planText(s,vars))}</span>
-        <span class="treps">${esc(String(s.r||'—'))}</span>
-        <input type="number" inputmode="decimal" step="2.5" min="0" value="${lg.kg!==undefined?lg.kg:''}" placeholder="kg" onchange="saveSet(${gi},${si},'kg',this.value)">
+        <span class="treps">${esc(reps||'—')}</span>
+        <input type="number" inputmode="decimal" step="2.5" min="0" class="kgI" data-gi="${gi}" data-si="${si}" value="${kgVal!==''?kgVal:defKg}" placeholder="${defKg||'kg'}" onchange="saveSet(${gi},${si},'kg',this.value)">
+        <input type="number" inputmode="numeric" step="1" min="0" class="rpI" data-gi="${gi}" data-si="${si}" value="${repsVal!==''?repsVal:(reps.match(/^\d+$/)?reps:'')}" placeholder="${esc(reps||'次')}" onchange="saveSet(${gi},${si},'reps',this.value)">
         <input type="number" inputmode="decimal" step="0.5" min="1" max="10" value="${lg.rpe!==undefined?lg.rpe:''}" placeholder="—" onchange="saveSet(${gi},${si},'rpe',this.value)">
       </div>`;
     });
   });
-  html+=`<div class="lgnote" style="margin-top:10px">💡 填重量自动保存；整日全部填完，格子自动打勾。</div>
+  html+=`<div class="lgnote" style="margin-top:10px">💡 重量、实次均已按计划预填，可直接改；点「✓ 本日完成」即按预填值保存并打勾。</div>
+  <div class="daydone"><button class="btnDone" onclick="completeDay()">✓ 本日完成（保存预填数据）</button></div>
   <div class="lgf" style="margin-top:8px"><label>当日备注</label><input value="${esc(rec.note||'')}" placeholder="状态、疼痛、动作调整…" onchange="saveNote(this.value)"></div>`;
   return html;
 }
+
+/* 一键完成：把页面里预填的重量/实次全部落库（模拟真实训练＝按计划完成） */
+function completeDay(){
+  const rows=[...document.querySelectorAll('#dayBox .trow')];
+  const t=getT(curPlanId), vars=varsOf(curPlanId);
+  const day=t.weeks[curW].d[curD];
+  const logs=getLogs(curPlanId); const k=dayKey(curW,curD);
+  logs[k]=logs[k]||{sets:{}}; logs[k].sets=logs[k].sets||{};
+  rows.forEach(r=>{
+    const kg=r.querySelector('.kgI'), rp=r.querySelector('.rpI');
+    if(!kg||!rp) return;
+    const gi=+kg.dataset.gi, si=+kg.dataset.si;
+    const sk=gi+'_'+si;
+    let kv=parseFloat(kg.value);
+    let rv=parseFloat(rp.value);
+    /* 没预填重量（自选重量动作）→ 仍记为完成，重量记 0，实次按计划或 1 记 */
+    if(!isFinite(kv)) kv=0;
+    if(!isFinite(rv)){
+      const s=(day.g[gi]&&day.g[gi].s[si])||{};
+      const rr=parseFloat(repsOf(s)); rv=isFinite(rr)?rr:1;
+    }
+    if(rv<=0) rv=1;
+    logs[k].sets[sk]=logs[k].sets[sk]||{};
+    logs[k].sets[sk].kg=r25(kv); logs[k].sets[sk].reps=rv;
+  });
+  setLogs(curPlanId,logs);
+  const gb=document.getElementById('gridBox'); if(gb) gb.innerHTML=gridHTML(getT(curPlanId));
+  rerenderDay(); const st=dayState(curPlanId,curW,curD);
+  const dh=document.querySelector('.daypr'); if(dh) dh.innerHTML=`${st.done}/${st.total} 组${st.complete?' · 已打勾 ✓':''}`;
+  refreshBar();
+  toast(st.complete?'本日完成 ✓ 已保存':'还有未预填重量的组，请手动补填');
+}
+
 function saveSet(gi,si,f,v){
   if(v!=='' && (!isFinite(+v) || +v<0)) { rerenderDay(); return }
   if(f==='rpe' && v!=='' && (+v<1||+v>10)) { rerenderDay(); return }
@@ -225,11 +323,15 @@ function saveSet(gi,si,f,v){
   logs[k]=logs[k]||{sets:{}}; logs[k].sets=logs[k].sets||{};
   const sk=gi+'_'+si;
   logs[k].sets[sk]=logs[k].sets[sk]||{};
-  if(v==='') delete logs[k].sets[sk][f]; else logs[k].sets[sk][f]=+v;
+  if(v==='') delete logs[k].sets[sk][f]; else logs[k].sets[sk][f]=(f==='kg')?r25(+v):+v;
   if(!Object.keys(logs[k].sets[sk]).length) delete logs[k].sets[sk];
   setLogs(curPlanId,logs);
   const row=document.querySelector(`input[onchange*="saveSet(${gi},${si},'kg'"]`)?.closest('.trow');
   if(row) row.classList.toggle('done', isSetDone(logs[k].sets[sk]));
+  if(row){
+    const inp=row.querySelectorAll('input');
+    if(f==='kg' && v!=='' && inp[0]) inp[0].value=fmtW(r25(+v));
+  }
   const gb=document.getElementById('gridBox'); if(gb) gb.innerHTML=gridHTML(getT(curPlanId));
   const st=dayState(curPlanId,curW,curD);
   const dh=document.querySelector('.daypr');
