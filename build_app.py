@@ -80,7 +80,7 @@ HTML = r"""<!DOCTYPE html>
 :root{--bg:#0d100f;--card:#171c19;--card2:#1d2620;--line:#303a33;--txt:#f1f5ee;--sub:#9ba69f;--acc:#d5fa75;--acc2:#e8ffb0;--blue:#5ed88f;--green:#5ed88f;--red:#ff6b5e}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--txt);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.75;font-size:16px}
-#app{max-width:760px;margin:0 auto;padding-bottom:96px}
+#app{max-width:760px;margin:0 auto;padding-bottom:96px;overflow-x:hidden}
 header{padding:26px 20px 14px;background:var(--bg)}
 .brand{display:flex;align-items:center;gap:12px}
 .logo{width:44px;height:44px;flex:none}
@@ -285,23 +285,23 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .lgneed{color:#d8b26a;font-size:10.5px;border:1px solid rgba(216,178,106,.35);border-radius:5px;padding:1px 6px;margin-left:6px;white-space:nowrap}
 .lgpg{float:right;font-size:11px;color:var(--acc);font-weight:600;font-variant-numeric:tabular-nums}
 .lgmaxgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
-.lgnote{font-size:11px;color:var(--sub);line-height:1.65;background:var(--card2);border-radius:8px;padding:7px 9px}
+.lgnote{font-size:11px;color:var(--sub);line-height:1.65;background:var(--card2);border-radius:8px;padding:7px 9px;word-break:break-all;overflow-wrap:anywhere}
 .lgbarsm{height:4px;background:var(--line);border-radius:99px;overflow:hidden;margin:7px 0 10px}
 .lgbarsm i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .3s}
-/* 格子表：紧凑 */
-.gblock{margin-bottom:9px}
-.gbt{font-size:10.5px;color:var(--sub);letter-spacing:.3px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gcells{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
-.gcell{background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:5px 1px;text-align:center;cursor:pointer;transition:.1s;min-width:0}
-.gcell b{display:block;font-size:11px;color:#a9b3a5;line-height:1.25;font-variant-numeric:tabular-nums}
-.gcell span{display:block;font-size:9px;color:#6d766c;line-height:1.2;margin-top:1px}
-.gcell:active{transform:scale(.94)}
+/* 格子表：极紧凑（每周期一行，格高18px） */
+#gridBox{margin-top:6px}
+.gblock{display:flex;align-items:center;gap:5px;padding:1.5px 0}
+.gbt{flex:0 0 56px;font-size:9px;color:var(--sub);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gcells{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:2.5px;min-width:0}
+.gcell{position:relative;background:#1a211a;border:1px solid #2b3429;border-radius:3px;height:17px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.1s;min-width:0;overflow:hidden}
+.gcell b{font-size:9px;color:#8f998c;line-height:1;font-weight:600;font-variant-numeric:tabular-nums}
+.gcell u{position:absolute;left:0;bottom:0;height:2px;background:#c9b64a}
+.gcell:active{transform:scale(.92)}
 .gcell.part{border-color:#7d7a3c;background:#242a1c}
 .gcell.part b{color:#e0d67a}
-.gcell.done{background:#344c24;border-color:#6f954e}
-.gcell.done b{color:var(--acc);font-size:13px}
-.gcell.done span{color:#9bb183}
-.gcell.sel{outline:2px solid var(--acc);outline-offset:-1px}
+.gcell.done{background:#3a5528;border-color:#7aa855}
+.gcell.done b{color:var(--acc);font-size:11px}
+.gcell.sel{outline:1.5px solid var(--acc);outline-offset:-1px}
 /* 当日表 */
 .dayhd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:0 0 8px;border-bottom:1px solid var(--line);margin-bottom:2px}
 .dayhd div{display:flex;flex-direction:column;gap:1px;min-width:0}
@@ -324,11 +324,11 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .trow.done .tplan{color:var(--acc2)}
 .trow.done input{background:#1d2a17;border-color:#4d6b39;color:var(--acc2)}
 /* 保存提示 */
-.dnav2{display:flex;align-items:center;gap:8px;margin:8px 0 4px}
-.dn2b{flex:1;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px 6px;font-size:12px;cursor:pointer;font-family:inherit}
-.dn2b:active{opacity:.8}
-.dn2b:disabled{opacity:.35}
-.dn2pos{font-size:10.5px;color:var(--sub);flex:none;font-variant-numeric:tabular-nums}
+.dnav2{display:flex;align-items:center;gap:6px;margin:7px 0 3px}
+.dnav2 button{flex:1;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:7px;padding:7px 4px;font-size:11.5px;cursor:pointer;font-family:inherit}
+.dnav2 button:active{opacity:.8}
+.dnav2 button:disabled{opacity:.3}
+.dnav2 span{font-size:10px;color:var(--sub);flex:none;font-variant-numeric:tabular-nums}
 .lgtoast{position:fixed;left:50%;bottom:86px;transform:translate(-50%,14px);background:#2a3a22;border:1px solid var(--acc);color:var(--acc);font-size:12.5px;padding:8px 16px;border-radius:99px;opacity:0;pointer-events:none;transition:.22s;z-index:99;white-space:nowrap;box-shadow:0 6px 22px rgba(0,0,0,.5)}
 .lgtoast.on{opacity:1;transform:translate(-50%,0)}
 @media(max-width:400px){

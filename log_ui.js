@@ -1,8 +1,5 @@
-// ================= 训练日志 v5：计划首页 + 完成格子表 + 当日逐组填报（自动保存） =================
-let curPlanId = null;   // 当前计划
-let curW = 0;           // 当前周期块
-let curD = 0;           // 当前训练日
-let showDay = false;    // 是否展开当日填报
+// ================= 训练日志 v6：计划首页 + 紧凑格子表 + 当日逐组填报（自动保存） =================
+let curPlanId = null, curW = 0, curD = 0, showDay = false;
 
 /* ---------- 存储 ---------- */
 function LS(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v) }catch(e){ return null } }
@@ -14,10 +11,9 @@ function getMaxes(pid){ return jget('sddr_max_'+pid, {}) }
 function setMaxes(pid,o){ jset('sddr_max_'+pid, o) }
 function getLogs(pid){ const all=jget('sddr_logs',{}); return all[pid]||{} }
 function setLogs(pid,o){ const all=jget('sddr_logs',{}); all[pid]=o; jset('sddr_logs', all) }
-function planName(id){ const p=PLANS.find(x=>x.id===id); return p?p.name:'未知计划' }
 function getT(id){ return PT[id]||null }
 
-/* ---------- 计算 ---------- */
+/* ---------- 配重换算 ---------- */
 function varsOf(pid){
   const mx=getMaxes(pid), t=getT(pid), v={};
   if(t) t.inputs.forEach(i=>{ const n=parseFloat(mx[i.k]); if(isFinite(n)) v[i.k]=n });
@@ -39,14 +35,11 @@ function calcW(expr, vars){
   }catch(e){ out=null }
   CALC_CACHE[ck]=out; return out;
 }
-// 每组"计划"列：主项显示换算后的具体重量，辅助项显示处方文字（不显示公式）
+// 计划列：只显示换算后的重量或处方文字，绝不显示公式
 function planText(set, vars){
-  if(set.num!==null && set.num!==undefined) return set.num+' kg';
-  if(set.expr){
-    const v=calcW(set.expr, vars);
-    return v!==null ? v+' kg' : '待填极限';
-  }
-  return set.txt || '—';
+  if(set.n!==null && set.n!==undefined) return set.n+' kg';
+  if(set.e){ const v=calcW(set.e, vars); return v!==null ? v+' kg' : '待填极限' }
+  return set.t || '—';
 }
 
 /* ---------- 完成判定 ---------- */
@@ -54,11 +47,9 @@ function isSetDone(lg){ return !!lg && lg.kg!=='' && lg.kg!=null && isFinite(+lg
 function dayKey(wi,di){ return wi+'-'+di }
 function dayState(pid, wi, di){
   const t=getT(pid); if(!t) return {total:0,done:0,complete:false,partial:false};
-  const logs=getLogs(pid);
-  const day=t.weeks[wi].d[di];
-  const rec=logs[dayKey(wi,di)];
+  const rec=getLogs(pid)[dayKey(wi,di)];
   let total=0, done=0;
-  day.g.forEach((g,gi)=>{ g.sets.forEach((s,si)=>{ total++; if(rec&&rec.sets&&isSetDone(rec.sets[gi+'_'+si])) done++ }) });
+  t.weeks[wi].d[di].g.forEach((g,gi)=>g.s.forEach((s,si)=>{ total++; if(rec&&rec.sets&&isSetDone(rec.sets[gi+'_'+si])) done++ }));
   return {total, done, complete: total>0 && done===total, partial: done>0 && done<total};
 }
 function planProgress(pid){
@@ -96,7 +87,6 @@ function logView(){
     <div class="lgstat"><div><b>${doneDays}</b><span>已完成训练日</span></div><div><b>${Object.keys(allLogs).length}</b><span>有记录计划</span></div><div><b>14</b><span>计划总数</span></div></div>
   </div>`;
 }
-
 function openPlan(id){
   if(!id) return;
   setCur(id); curPlanId=id; curW=0; curD=0; showDay=false;
@@ -105,7 +95,7 @@ function openPlan(id){
 
 /* ---------- 计划首页 ---------- */
 function planView(){
-  const p=PLANS.find(x=>x.id===curPlanId); const t=getT(curPlanId);
+  const p=PLANS.find(x=>x.id===curPlanId), t=getT(curPlanId);
   if(!p||!t) return logView();
   const mx=getMaxes(p.id);
   const seen=new Set(); const inputs=t.inputs.filter(i=>{ if(seen.has(i.k))return false; seen.add(i.k); return true });
@@ -116,7 +106,7 @@ function planView(){
   <div class="ptags"><span class="ptag">${p.tag}</span><span class="ptag">${p.weeks}</span><span class="ptag">${p.freq}</span></div>
 
   <div class="lgsec">
-    <div class="lgsh">🏋️ 训练极限 ${allFilled?'<span class="lgok">已保存 · 配重已换算 ✓</span>':'<span class="lgneed">填写后自动换算</span>'}</div>
+    <div class="lgsh">🏋️ 训练极限 ${allFilled?'<span class="lgok">已保存 · 已换算 ✓</span>':'<span class="lgneed">填写后自动换算</span>'}</div>
     <div class="lgmaxgrid">${inputs.map(i=>`
       <div class="lgf"><label>${esc(i.label)}</label><input type="number" step="2.5" min="0" class="lgmaxI" data-k="${esc(i.k)}" value="${mx[i.k]!==undefined?mx[i.k]:''}" placeholder="kg" onchange="saveMaxAuto()"></div>`).join('')}
     </div>
@@ -124,7 +114,7 @@ function planView(){
   </div>
 
   <div class="lgsec" id="gridSec">
-    <div class="lgsh">✅ 每日完成情况 <span class="lgpg">${pr.D}/${pr.T} 组 · ${pr.pct}%</span></div>
+    <div class="lgsh">✅ 每日完成 <span class="lgpg">${pr.D}/${pr.T} 组 · ${pr.pct}%</span></div>
     <div class="lgbarsm"><i style="width:${pr.pct}%"></i></div>
     <div id="gridBox">${gridHTML(t)}</div>
   </div>
@@ -134,18 +124,19 @@ function planView(){
     <div id="dayBox">${showDay?dayHTML(t):'<div class="lgnone">点击上方任一训练日格子，查看并填报当日训练</div>'}</div>
   </div>
 
-  ${p.sections.map((s,i)=>`<div class="sec"><div class="hd" onclick="this.parentElement.classList.toggle('open')"><span>📋 ${esc(s[0])}</span><span class="arr">▶</span></div><div class="bd"><div class="content"><p>${esc(s[1])}</p></div></div></div>`).join('')}`;
+  ${p.sections.map(s=>`<div class="sec"><div class="hd" onclick="this.parentElement.classList.toggle('open')"><span>📋 ${esc(s[0])}</span><span class="arr">▶</span></div><div class="bd"><div class="content"><p>${esc(s[1])}</p></div></div></div>`).join('')}`;
 }
 
-/* ---------- 完成情况格子表 ---------- */
+/* ---------- 格子表（极紧凑：每周期一行） ---------- */
 function gridHTML(t){
   return t.weeks.map((w,wi)=>{
-    const label=w.n.length>12?w.n.slice(0,12)+'…':w.n;
-    return `<div class="gblock"><div class="gbt">${esc(label)}</div><div class="gcells">${
+    const label=w.n.length>9?w.n.slice(0,9):w.n;
+    return `<div class="gblock"><div class="gbt" title="${esc(w.n)}">${esc(label)}</div><div class="gcells">${
       w.d.map((d,di)=>{
         const st=dayState(curPlanId,wi,di);
         const sel=(showDay&&wi===curW&&di===curD)?' sel':'';
-        return `<div class="gcell${st.complete?' done':''}${st.partial?' part':''}${sel}" onclick="pickDay(${wi},${di})" title="${esc(d.n)} · ${st.done}/${st.total}组"><b>${st.complete?'✓':esc(dayNum(d.n))}</b><span>${st.total}组</span></div>`;
+        const bar=st.partial?`<u style="width:${Math.round(st.done/st.total*100)}%"></u>`:'';
+        return `<div class="gcell${st.complete?' done':''}${st.partial?' part':''}${sel}" onclick="pickDay(${wi},${di})" title="${esc(d.n)} · ${st.done}/${st.total}组"><b>${st.complete?'✓':esc(dayNum(d.n))}</b>${bar}</div>`;
       }).join('')
     }</div></div>`;
   }).join('');
@@ -154,7 +145,6 @@ function dayNum(n){
   const m=String(n).match(/D\s*(\d+)/i) || String(n).match(/第\s*(\d+)\s*天/) || String(n).match(/(\d+)/);
   return m?('D'+m[1]):String(n).slice(0,2);
 }
-
 function pickDay(wi,di){
   curW=wi; curD=di; showDay=true;
   const t=getT(curPlanId);
@@ -162,32 +152,28 @@ function pickDay(wi,di){
   const sh=document.querySelector('#daySec .lgsh');
   if(sh) sh.innerHTML=`📝 当日训练 <span class="badge">${esc(t.weeks[wi].n)} · ${esc(t.weeks[wi].d[di].n)}</span>`;
   const box=document.getElementById('dayBox'); if(box) box.innerHTML=dayHTML(t);
-  const sec=document.getElementById('daySec');
-  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+  const sec=document.getElementById('daySec'); if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
 }
-
 function saveMaxAuto(){
   const p=PLANS.find(x=>x.id===curPlanId); if(!p) return;
   const o={}; document.querySelectorAll('.lgmaxI').forEach(i=>{ if(i.value!=='') o[i.dataset.k]=parseFloat(i.value) });
   setMaxes(p.id,o);
   Object.keys(CALC_CACHE).forEach(k=>delete CALC_CACHE[k]);
   const sh=document.querySelector('.lgsec .lgsh');
-  if(sh) sh.innerHTML='🏋️ 训练极限 <span class="lgok">已保存 · 配重已换算 ✓</span>';
+  if(sh) sh.innerHTML='🏋️ 训练极限 <span class="lgok">已保存 · 已换算 ✓</span>';
   const t=getT(p.id);
   const gb=document.getElementById('gridBox'); if(gb) gb.innerHTML=gridHTML(t);
   if(showDay){ const box=document.getElementById('dayBox'); if(box) box.innerHTML=dayHTML(t) }
-  refreshProgressBar();
+  refreshBar();
   toast('已自动保存 · 配重已更新');
 }
-function refreshProgressBar(){
+function refreshBar(){
   const pr=planProgress(curPlanId);
   const el=document.querySelector('#gridSec .lgpg'); if(el) el.textContent=`${pr.D}/${pr.T} 组 · ${pr.pct}%`;
   const bar=document.querySelector('.lgbarsm i'); if(bar) bar.style.width=pr.pct+'%';
 }
 
-/* ---------- 当日训练表 ---------- */
-const COLHEAD='<div class="thead"><span>#</span><span>计划</span><span>次</span><span>重量</span><span>RPE</span></div>';
-// 扁平化训练日索引（跨周顺序切换）
+/* ---------- 当日训练（同名动作连续合并，每组一行） ---------- */
 function flatDays(t){ const out=[]; t.weeks.forEach((w,wi)=>w.d.forEach((d,di)=>out.push([wi,di]))); return out }
 function switchDay(off){
   const t=getT(curPlanId); if(!t) return;
@@ -202,30 +188,36 @@ function dayHTML(t){
   const vars=varsOf(curPlanId);
   const rec=getLogs(curPlanId)[dayKey(curW,curD)]||{sets:{}};
   const st=dayState(curPlanId,curW,curD);
-  const fl=flatDays(t); const idx=fl.findIndex(x=>x[0]===curW&&x[1]===curD);
+  const fl=flatDays(t), idx=fl.findIndex(x=>x[0]===curW&&x[1]===curD);
   let html=`<div class="dayhd"><div><b>${esc(w.n)}</b><span>${esc(day.n)}</span></div><div class="daypr">${st.done}/${st.total} 组${st.complete?' · 已打勾 ✓':''}</div></div>`;
-  html+=`<div class="dnav2"><button class="dn2b" onclick="switchDay(-1)" ${idx<=0?'disabled':''}>‹ 上一训练日</button><span class="dn2pos">${idx+1} / ${fl.length}</span><button class="dn2b" onclick="switchDay(1)" ${idx>=fl.length-1?'disabled':''}>下一训练日 ›</button></div>`;
-  html+=COLHEAD;
+  html+=`<div class="dnav2"><button onclick="switchDay(-1)" ${idx<=0?'disabled':''}>‹ 上一训练日</button><span>${idx+1} / ${fl.length}</span><button onclick="switchDay(1)" ${idx>=fl.length-1?'disabled':''}>下一训练日 ›</button></div>`;
+  html+=`<div class="thead"><span>#</span><span>计划</span><span>次</span><span>重量</span><span>RPE</span></div>`;
+  // 合并连续同名动作
+  const blocks=[];
   day.g.forEach((g,gi)=>{
-    html+=`<div class="ghead">${esc(g.n)}</div>`;
-    g.sets.forEach((s,si)=>{
+    const last=blocks[blocks.length-1];
+    const same=last && last.n===g.n;
+    if(same){ g.s.forEach((s,si)=>last.sets.push({s,gi,si})); }
+    else blocks.push({n:g.n, sets:g.s.map((s,si)=>({s,gi,si}))});
+  });
+  blocks.forEach(bk=>{
+    html+=`<div class="ghead"><span>${esc(bk.n)}</span><em>${bk.sets.length}组</em></div>`;
+    bk.sets.forEach((it,n)=>{
+      const gi=it.gi, si=it.si, s=it.s;
       const k=gi+'_'+si, lg=rec.sets[k]||{};
-      const plan=planText(s,vars);
-      const reps=String(s.r||'');
       html+=`<div class="trow${isSetDone(lg)?' done':''}">
-        <span class="tno">${si+1}</span>
-        <span class="tplan">${esc(plan)}</span>
-        <span class="treps">${esc(reps||'—')}</span>
+        <span class="tno">${n+1}</span>
+        <span class="tplan">${esc(planText(s,vars))}</span>
+        <span class="treps">${esc(String(s.r||'—'))}</span>
         <input type="number" inputmode="decimal" step="2.5" min="0" value="${lg.kg!==undefined?lg.kg:''}" placeholder="kg" onchange="saveSet(${gi},${si},'kg',this.value)">
         <input type="number" inputmode="decimal" step="0.5" min="1" max="10" value="${lg.rpe!==undefined?lg.rpe:''}" placeholder="—" onchange="saveSet(${gi},${si},'rpe',this.value)">
       </div>`;
     });
   });
-  html+=`<div class="lgnote" style="margin-top:10px">💡 填重量自动保存并判定完成；整日全部填写后，格子表自动打勾。RPE 可留空。</div>
+  html+=`<div class="lgnote" style="margin-top:10px">💡 填重量自动保存；整日全部填完，格子自动打勾。</div>
   <div class="lgf" style="margin-top:8px"><label>当日备注</label><input value="${esc(rec.note||'')}" placeholder="状态、疼痛、动作调整…" onchange="saveNote(this.value)"></div>`;
   return html;
 }
-
 function saveSet(gi,si,f,v){
   if(v!=='' && (!isFinite(+v) || +v<0)) { rerenderDay(); return }
   if(f==='rpe' && v!=='' && (+v<1||+v>10)) { rerenderDay(); return }
@@ -236,18 +228,16 @@ function saveSet(gi,si,f,v){
   if(v==='') delete logs[k].sets[sk][f]; else logs[k].sets[sk][f]=+v;
   if(!Object.keys(logs[k].sets[sk]).length) delete logs[k].sets[sk];
   setLogs(curPlanId,logs);
-  // 行状态 + 进度 + 格子
-  const sel=`input[onchange*="saveSet(${gi},${si},'kg'"]`;
-  const row=document.querySelector(sel)?.closest('.trow');
+  const row=document.querySelector(`input[onchange*="saveSet(${gi},${si},'kg'"]`)?.closest('.trow');
   if(row) row.classList.toggle('done', isSetDone(logs[k].sets[sk]));
-  refreshProgressBar();
   const gb=document.getElementById('gridBox'); if(gb) gb.innerHTML=gridHTML(getT(curPlanId));
   const st=dayState(curPlanId,curW,curD);
   const dh=document.querySelector('.daypr');
   if(dh) dh.innerHTML=`${st.done}/${st.total} 组${st.complete?' · 已打勾 ✓':''}`;
-  toast(st.complete?'本日已完成 ✓ 已自动保存':'已自动保存');
+  refreshBar();
+  toast(st.complete?'本日完成 ✓ 已保存':'已自动保存');
 }
-function rerenderDay(){ const box=document.getElementById('dayBox'); if(box) box.innerHTML=dayHTML(getT(curPlanId)); }
+function rerenderDay(){ const box=document.getElementById('dayBox'); if(box) box.innerHTML=dayHTML(getT(curPlanId)) }
 function saveNote(v){
   const logs=getLogs(curPlanId); const k=dayKey(curW,curD);
   logs[k]=logs[k]||{sets:{}}; logs[k].note=v;
