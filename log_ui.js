@@ -225,9 +225,11 @@ function planView(){
   const seen=new Set(); const inputs=t.inputs.filter(i=>{ if(seen.has(i.k))return false; seen.add(i.k); return true });
   const allFilled=inputs.length>0 && inputs.every(i=>mx[i.k]!==undefined && mx[i.k]!=='');
   const pr=planProgress(p.id);
+  const hasRec=Object.keys(getLogs(p.id)).length>0;
   return `<div class="back" onclick="go('log')">← 训练日志</div>
   <h2 class="modtitle">${icoBoxInline('log')} ${esc(p.name)}</h2>
   <div class="ptags"><span class="ptag">${p.tag}</span><span class="ptag">${p.weeks}</span><span class="ptag">${p.freq}</span></div>
+  <div class="preset"><button class="btnRestart" onclick="askRestart()">🔄 重新开始计划</button><span>${hasRec?`已记录 ${Object.keys(getLogs(p.id)).length} 个训练日`:'尚未开始填报'}</span></div>
 
   ${inputs.length? `<div class="lgsec">
     <div class="lgsh">🏋️ 首次训练极限 ${allFilled?'<span class="lgok">已保存 · 已换算 ✓</span>':'<span class="lgneed">填写一次即可，后续自动换算</span>'}</div>
@@ -305,6 +307,101 @@ function bigThreeHTML(pid){
       <div class="b3sub">依据训练日志最佳成绩估算（Epley 公式）：${liftTxt}</div>
       <div class="b3sub">对比首次填写极限合计：<b>${b.hasBase?fmtW(b.baseSum)+' kg':'未填写'}</b></div>
     </div></div>`;
+}
+
+/* ---------- 重新开始计划 / 清空今日 ---------- */
+function confirmBox(opt){
+  /* opt: {title, desc, ok, danger, onOk} */
+  const old=document.getElementById('cfmWrap'); if(old) old.remove();
+  const el=document.createElement('div');
+  el.id='cfmWrap'; el.className='cfmWrap';
+  el.innerHTML=`<div class="cfmMask" onclick="closeConfirm()"></div>
+    <div class="cfmBox">
+      <div class="cfmT">${opt.title}</div>
+      <div class="cfmD">${opt.desc}</div>
+      <div class="cfmBtns">
+        <button class="cfmCancel" onclick="closeConfirm()">取消</button>
+        <button class="cfmOk${opt.danger?' danger':''}" id="cfmOkBtn">${opt.ok||'确认'}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('on'));
+  document.getElementById('cfmOkBtn').onclick=()=>{ closeConfirm(); opt.onOk&&opt.onOk() };
+  return el;
+}
+function closeConfirm(){
+  const el=document.getElementById('cfmWrap'); if(!el) return;
+  el.classList.remove('on'); setTimeout(()=>el.remove(),160);
+}
+function askRestart(){
+  const p=PLANS.find(x=>x.id===curPlanId); if(!p) return;
+  const logs=getLogs(p.id), days=Object.keys(logs).length;
+  const t=getT(p.id);
+  let sets=0; Object.values(logs).forEach(r=>{ sets+=Object.keys((r&&r.sets)||{}).length });
+  const maxes=getMaxes(p.id);
+  const hasMax=Object.keys(maxes).length>0;
+  confirmBox({
+    title:'重新开始该计划？',
+    desc:`<p><b>${esc(p.name)}</b></p>
+      <ul>
+        <li>将清空 <b>${days}</b> 个训练日、<b>${sets}</b> 组的重量 / 实次 / RPE 填报</li>
+        <li>${hasMax?'同时清空已填的<b>首次训练极限</b>，需重新填写':'尚未填写训练极限'}</li>
+        <li>辅助动作的下拉选择也会一并清除</li>
+      </ul>
+      <p class="cfmWarn">此操作不可撤销，确定要重新开始吗？</p>`,
+    ok:'确认重新开始', danger:true,
+    onOk:()=>doRestart()
+  });
+}
+function doRestart(){
+  const pid=curPlanId; if(!pid) return;
+  /* 1. 清空本计划日志 */
+  const all=jget('sddr_logs',{});
+  if(all[pid]!==undefined){ delete all[pid]; jset('sddr_logs', all) }
+  /* 2. 清空极限 */
+  try{ LS('sddr_max_'+pid, '') }catch(e){}
+  try{ localStorage.removeItem('sddr_max_'+pid) }catch(e){}
+  /* 3. 清空本计划的辅助动作选择 */
+  const acts=jget('sddr_acts',{});
+  Object.keys(acts).forEach(k=>{ if(k.indexOf(pid+':')===0) delete acts[k] });
+  jset('sddr_acts', acts);
+  /* 4. 重置缓存与界面状态 */
+  Object.keys(CALC_CACHE||{}).forEach(k=>delete CALC_CACHE[k]);
+  curW=0; curD=0; showDay=false;
+  render(); toast('已重新开始 · 填报记录已清空');
+}
+
+function askClearDay(){
+  const t=getT(curPlanId); if(!t) return;
+  const w=t.weeks[curW], day=w&&w.d[curD]; if(!day) return;
+  const rec=getLogs(curPlanId)[dayKey(curW,curD)]||{sets:{}};
+  const n=Object.keys(rec.sets||{}).length;
+  if(!n){
+    toast('今日还没有填报记录'); return;
+  }
+  confirmBox({
+    title:'清空今日填报？',
+    desc:`<p><b>${esc(w.n)} · ${esc(day.n)}</b></p>
+      <ul><li>将清空今日 <b>${n}</b> 组的重量 / 实次 / RPE 与当日备注</li>
+      <li>不影响该计划其它训练日</li></ul>
+      <p class="cfmWarn">此操作不可撤销。</p>`,
+    ok:'确认清空', danger:true,
+    onOk:()=>doClearDay()
+  });
+}
+function doClearDay(){
+  const logs=getLogs(curPlanId), k=dayKey(curW,curD);
+  if(logs[k]!==undefined){ delete logs[k]; setLogs(curPlanId, logs) }
+  Object.keys(CALC_CACHE||{}).forEach(x=>delete CALC_CACHE[x]);
+  const gb=document.getElementById('gridBox');
+  if(gb) gb.innerHTML=gridHTML(getT(curPlanId));
+  rerenderDay();
+  const st=dayState(curPlanId,curW,curD);
+  const dh=document.querySelector('.daypr');
+  if(dh) dh.innerHTML=`${st.done}/${st.total} 组`;
+  const b3=document.getElementById('b3sec'); if(b3) b3.outerHTML=bigThreeHTML(curPlanId);
+  refreshBar(); refreshRoll();
+  toast('今日填报已清空');
 }
 
 /* ---------- 格子表（极紧凑：每周期一行） ---------- */
@@ -474,6 +571,7 @@ function dayHTML(t){
   });
   html+=`<div class="lgnote" style="margin-top:10px">💡 重量、实次均已按计划预填，可直接改；点「✓ 本日完成」即按预填值保存并打勾。</div>
   <div class="daydone"><button class="btnDone" onclick="completeDay()">✓ 本日完成（保存预填数据）</button></div>
+  <div class="daydone"><button class="btnClear" onclick="askClearDay()">🗑 清空今日填报</button></div>
   <div class="lgf" style="margin-top:8px"><label>当日备注</label><input value="${esc(rec.note||'')}" placeholder="状态、疼痛、动作调整…" onchange="saveNote(this.value)"></div>`;
   return html;
 }

@@ -368,6 +368,29 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .dnav2 button:disabled{opacity:.3}
 .dnav2 span{font-size:10px;color:var(--sub);flex:none;font-variant-numeric:tabular-nums}
 .daydone{margin:8px 0 0}
+.preset{display:flex;align-items:center;gap:10px;margin:10px 0 2px;flex-wrap:wrap}
+.preset span{font-size:10.5px;color:var(--sub)}
+.btnRestart{background:rgba(224,138,106,.1);border:1px solid rgba(224,138,106,.5);color:#e0996a;border-radius:8px;padding:6px 12px;font-size:11.5px;font-weight:700;font-family:inherit;cursor:pointer}
+.btnRestart:active{background:rgba(224,138,106,.2)}
+.btnClear{width:100%;background:transparent;border:1px solid #4a3a34;color:#c08a72;border-radius:9px;padding:8px;font-size:11.5px;font-family:inherit;cursor:pointer;margin-top:6px}
+.btnClear:active{background:rgba(224,138,106,.12)}
+.cfmWrap{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .16s}
+.cfmWrap.on{opacity:1}
+.cfmMask{position:absolute;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(2px)}
+.cfmBox{position:relative;width:100%;max-width:360px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 16px 14px;box-shadow:0 18px 44px rgba(0,0,0,.55);transform:translateY(8px);transition:transform .16s}
+.cfmWrap.on .cfmBox{transform:none}
+.cfmT{font-size:15px;font-weight:700;color:var(--txt);margin-bottom:10px}
+.cfmD{font-size:12px;color:var(--sub);line-height:1.7}
+.cfmD p{margin:0 0 6px}
+.cfmD b{color:var(--acc2)}
+.cfmD ul{margin:4px 0 8px;padding-left:16px}
+.cfmD li{margin-bottom:3px;word-break:break-word}
+.cfmD .cfmWarn{color:#e0996a;font-size:11.5px;margin-top:8px}
+.cfmBtns{display:flex;gap:9px;margin-top:14px}
+.cfmBtns button{flex:1;border-radius:9px;padding:10px;font-size:12.5px;font-family:inherit;cursor:pointer;font-weight:700}
+.cfmCancel{background:#1a201a;border:1px solid var(--line);color:var(--sub)}
+.cfmOk{background:rgba(213,250,117,.14);border:1px solid var(--acc);color:var(--acc)}
+.cfmOk.danger{background:rgba(224,110,90,.14);border-color:#d9694f;color:#f09a7e}
 .ghead.libg{flex-wrap:wrap;gap:4px}
 .ghead.libg .libSel{margin-left:auto;max-width:58%;background:#101512;border:1px solid #3b463c;color:var(--acc2);border-radius:6px;padding:3px 5px;font-size:10.5px;font-family:inherit;outline:none}
 .jmroll{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
