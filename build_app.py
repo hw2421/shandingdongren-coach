@@ -319,6 +319,11 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .lgmaxgrid.three{grid-template-columns:repeat(3,1fr)}
 .lgmaxgrid.three .lgf label{font-size:9.5px}
 .lgmaxgrid.three .lgmaxI{padding:6px 4px;font-size:12px}
+.lgf.repf label{color:#c9b06a}
+.lgf.repf .lgmaxI{text-align:center}
+.lgmaxgrid.four{grid-template-columns:repeat(4,1fr);gap:6px}
+.lgmaxgrid.four .lgf label{font-size:9px;line-height:1.3;height:22px;display:flex;align-items:flex-end}
+.lgmaxgrid.four .lgmaxI{padding:6px 3px;font-size:11.5px;text-align:center}
 .lgnote{font-size:11px;color:var(--sub);line-height:1.65;background:var(--card2);border-radius:8px;padding:7px 9px;word-break:break-all;overflow-wrap:anywhere}
 .lgbarsm{height:4px;background:var(--line);border-radius:99px;overflow:hidden;margin:7px 0 10px}
 .lgbarsm i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .3s}

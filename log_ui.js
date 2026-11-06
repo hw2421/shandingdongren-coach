@@ -40,10 +40,21 @@ function actualReps(pid,wi,di,gi,si){
 }
 
 /* ===== Juggernaut 滚动 TM：模块1=90%×1RM；模块2~4=上模块TM+（上模块第3周主项末组实次−标准次数）×2.5 ===== */
+/* 估算 1RM（Epley）：重量 ×（1 + 次数 × 0.0333）；只做 1 次时即为该重量本身 */
+function epley1RM(kg, reps){
+  const w=parseFloat(kg), n=parseFloat(reps);
+  if(!isFinite(w)||w<=0) return null;
+  const r=(isFinite(n)&&n>0)?n:1;
+  return w*(1+r*0.0333);
+}
 function jmTM(pid, mod, lift){
   const t=getT(pid); if(!t) return null;
   const rm=maxOf(pid, lift); if(rm===null) return null;
-  const base = r25(rm*0.9);
+  /* 模块1训练上限 = 估算 1RM × 90%；估算 1RM 由「当前重量 + 极限次数」按 Epley 换算 */
+  const rk=(t.rolling&&t.rolling.repsKeys&&t.rolling.repsKeys[lift])||null;
+  const rn=rk?maxOf(pid, rk):null;
+  const e1=epley1RM(rm, rn);
+  const base = r25((e1===null?rm:e1)*0.9);
   if(mod<=1) return base;
   let tm=base;
   /* 每个模块的「第3周（转化期）」= 该模块第3周全，主项末组标准次数见下表 */
@@ -232,11 +243,13 @@ function planView(){
   <div class="preset"><button class="btnRestart" onclick="askRestart()">🔄 重新开始计划</button><span>${hasRec?`已记录 ${Object.keys(getLogs(p.id)).length} 个训练日`:'尚未开始填报'}</span></div>
 
   ${inputs.length? `<div class="lgsec">
-    <div class="lgsh">🏋️ 首次训练极限 ${allFilled?'<span class="lgok">已保存 · 已换算 ✓</span>':'<span class="lgneed">填写一次即可，后续自动换算</span>'}</div>
-    <div class="lgmaxgrid${inputs.length>2?' three':''}">${inputs.map(i=>`
-      <div class="lgf"><label>${esc(i.label)}</label><input type="number" step="2.5" min="0" class="lgmaxI" data-k="${esc(i.k)}" value="${mx[i.k]!==undefined?mx[i.k]:(i.def!==undefined?i.def:'')}" placeholder="kg" onchange="saveMaxAuto()"></div>`).join('')}
+    <div class="lgsh">${t.rolling?'🏋️ 初始成绩（重量 + 极限次数）':'🏋️ 首次训练极限'} ${allFilled?'<span class="lgok">已保存 · 已换算 ✓</span>':'<span class="lgneed">填写一次即可，后续自动换算</span>'}</div>
+    <div class="lgmaxgrid${inputs.length>4?' four':(inputs.length>2?' three':'')}">${inputs.map(i=>{
+      const isRep=/r$/.test(i.k) && t.rolling && t.rolling.repsKeys && Object.values(t.rolling.repsKeys).indexOf(i.k)>=0;
+      return `<div class="lgf${isRep?' repf':''}"><label>${esc(i.label)}</label><input type="number" step="${isRep?'1':'2.5'}" min="${isRep?'1':'0'}" max="${isRep?'30':''}" class="lgmaxI" data-k="${esc(i.k)}" data-rep="${isRep?'1':''}" value="${mx[i.k]!==undefined?mx[i.k]:(i.def!==undefined?i.def:'')}" placeholder="${isRep?'次':'kg'}" onchange="saveMaxAuto()"></div>`;
+    }).join('')}
     </div>
-    <div class="lgnote" style="margin-top:8px">📐 ${t.rolling? '模块1训练上限＝首填极限 × 90%；后续模块按上一模块第3周第一个主项动作最后一组的「实次」自动推算（未填写则不显示该模块训练上限）。此处只填一次。' : '首次填一次极限即可，之后按计划表逻辑自动换算，全部取 2.5kg 整数倍。'}</div>
+    <div class="lgnote" style="margin-top:8px">📐 ${t.rolling? '填入「当前重量 + 该重量能做到的极限次数」，系统据此估算你的 1RM 并确定模块1的训练上限；后续模块按上一模块第3周第一个主项动作最后一组的「实次」自动推算（未填写则不显示该模块训练上限）。此处只填一次。' : '首次填一次极限即可，之后按计划表逻辑自动换算，全部取 2.5kg 整数倍。'}</div>
     ${t.rolling? `<div class="jmroll" id="jmRoll">${jmRollHTML()}</div>`:''}
   </div>` : `<div class="lgsec"><div class="lgnote">🎯 本计划按 <b>RPE 处方</b>执行：重量由当天 RPE 与次数自行确定，不自动换算。填「实重 + 实次」即可记录。</div></div>`}
 
@@ -304,7 +317,7 @@ function bigThreeHTML(pid){
   return `<div class="lgsec" id="b3sec"><div class="lgsh">🏆 三大项预测合计（深蹲+卧推+硬拉）</div>
     <div class="b3box">
       <div class="b3main"><b>${predLine}</b><span>预测合计${diffTxt}</span></div>
-      <div class="b3sub">依据训练日志最佳成绩估算（Epley 公式）：${liftTxt}</div>
+      <div class="b3sub">依据训练日志中的最佳单组成绩估算：${liftTxt}</div>
       <div class="b3sub">对比首次填写极限合计：<b>${b.hasBase?fmtW(b.baseSum)+' kg':'未填写'}</b></div>
     </div></div>`;
 }
@@ -436,9 +449,9 @@ function saveMaxAuto(){
   const o={}; document.querySelectorAll('.lgmaxI').forEach(i=>{ if(i.value!=='') o[i.dataset.k]=parseFloat(i.value) });
   setMaxes(p.id,o);
   Object.keys(CALC_CACHE).forEach(k=>delete CALC_CACHE[k]);
-  const sh=document.querySelector('.lgsec .lgsh');
-  if(sh) sh.innerHTML='🏋️ 首次训练极限 <span class="lgok">已保存 · 已换算 ✓</span>';
   const t=getT(p.id);
+  const sh=document.querySelector('.lgsec .lgsh');
+  if(sh) sh.innerHTML=(t&&t.rolling?'🏋️ 初始成绩（重量 + 极限次数）':'🏋️ 首次训练极限')+' <span class="lgok">已保存 · 已换算 ✓</span>';
   const gb=document.getElementById('gridBox'); if(gb) gb.innerHTML=gridHTML(t);
   if(showDay){ const box=document.getElementById('dayBox'); if(box) box.innerHTML=dayHTML(t) }
   const b3=document.getElementById('b3sec');
@@ -461,9 +474,9 @@ function jmRollHTML(){
   return lifts.map(([k,label])=>{
     const cells=[1,2,3,4].map(m=>{
       const tm=jmTM(curPlanId,m,k);
-      return `<div class="jr">M${m}<b>${tm!==null?fmtW(tm):'—'}</b></div>`;
+      return `<div class="jr">模块${m}<b>${tm!==null?fmtW(tm):'—'}</b></div>`;
     }).join('');
-    return `<div style="grid-column:1/-1;font-size:10px;color:var(--sub);margin-top:4px">${label} 各模块 TM（kg）</div><div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:5px">${cells}</div>`;
+    return `<div style="grid-column:1/-1;font-size:10px;color:var(--sub);margin-top:6px">${label} · 各模块训练上限（kg）</div><div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:5px">${cells}</div>`;
   }).join('');
 }
 
