@@ -36,6 +36,11 @@ MODULES = [
 DIAG = json.loads((BASE/"diag_data.json").read_text(encoding="utf-8"))
 DIAG_UI = (BASE/"diag_ui.js").read_text(encoding="utf-8")
 PLANDATA = json.loads((BASE/"plan_data.json").read_text(encoding="utf-8"))
+import glob as _glob
+PLANTABLES = {}
+for _f in sorted((BASE/"tables").glob("*.json")):
+    _d = json.loads(_f.read_text(encoding="utf-8"))
+    PLANTABLES[_d["id"]] = _d
 LOG_UI = (BASE/"log_ui.js").read_text(encoding="utf-8")
 
 # ---------- 1. 配图已全部移除（仅保留文字与页码出处） ----------
@@ -271,6 +276,14 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .mvtab{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;margin-top:6px;display:block;overflow-x:auto}
 .mvtab th,.mvtab td{border:1px solid var(--line);padding:5px 8px;text-align:left;white-space:nowrap}
 .mvtab th{background:var(--card2);color:var(--acc2);font-weight:600}
+
+.setrow{display:grid;grid-template-columns:26px 1.3fr 84px 1fr 1fr 64px;gap:6px;align-items:center;background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:7px 8px;margin-bottom:6px}
+.setrow .setno{font-size:12px;font-weight:700;color:var(--acc);text-align:center}
+.setrow .setd{font-size:11px;color:var(--sub);line-height:1.4}
+.setrow .setw{font-size:11px;color:var(--sub);white-space:nowrap}
+.setrow .setw b{color:var(--acc);font-size:13px}
+.mvhead{display:flex;flex-direction:column;gap:2px;margin:12px 0 6px;padding-left:8px;border-left:3px solid var(--acc)}
+.mvhead .mvname{font-size:14px;font-weight:700;color:var(--acc2);line-height:1.4}
 /* 计划页 */
 .ptags{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px}
 .ptag{font-size:11px;color:var(--acc2);background:rgba(213,250,117,.1);border:1px solid rgba(213,250,117,.25);border-radius:6px;padding:2px 8px}
@@ -415,11 +428,12 @@ __DIAGUI__
 </script>
 <script>
 const PLANS=__PLANDATA__;
+const PT=__PLANTABLES__;
 __LOGUI__
 </script>
 </body>
 </html>"""
 
-out = HTML.replace("__DATA__", content_js).replace("__DIAGDATA__", json.dumps(DIAG, ensure_ascii=False)).replace("__DIAGUI__", DIAG_UI).replace("__PLANDATA__", json.dumps(PLANDATA, ensure_ascii=False)).replace("__LOGUI__", LOG_UI)
+out = HTML.replace("__DATA__", content_js).replace("__DIAGDATA__", json.dumps(DIAG, ensure_ascii=False)).replace("__DIAGUI__", DIAG_UI).replace("__PLANDATA__", json.dumps(PLANDATA, ensure_ascii=False)).replace("__PLANTABLES__", json.dumps(PLANTABLES, ensure_ascii=False)).replace("__LOGUI__", LOG_UI)
 OUT.write_text(out, encoding="utf-8")
 print("written", OUT, round(OUT.stat().st_size/1024/1024,2), "MB")

@@ -1,0 +1,3326 @@
+{
+ "id": "calgary",
+ "name": "Calgary Barbell 16周_complete",
+ "inputs": [
+  {
+   "k": "tsq",
+   "label": "深蹲TM"
+  },
+  {
+   "k": "tbp",
+   "label": "卧推TM"
+  },
+  {
+   "k": "tdl",
+   "label": "硬拉TM"
+  }
+ ],
+ "calcNote": "配重 = MROUND(TM×百分比, 5)，即按对应训练最大重量（Training Maxes F7/F8/F9，四舍五入到5磅）计算；Opener 为开把重量文字处方。",
+ "weeks": [
+  {
+   "name": "Weeks 1-4 · 第1周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "4×7 @ 67%",
+         "w": "Math.round(tsq*0.67/5)*5",
+         "r": "7"
+        }
+       ]
+      },
+      {
+       "n": "Paused Bench",
+       "sets": [
+        {
+         "d": "4×7 @ 67%",
+         "w": "Math.round(tbp*0.67/5)*5",
+         "r": "7"
+        }
+       ]
+      },
+      {
+       "n": "Overhead Press",
+       "sets": [
+        {
+         "d": "3×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "Bent Over Row",
+       "sets": [
+        {
+         "d": "3×12",
+         "w": "自选",
+         "r": "12"
+        }
+       ]
+      },
+      {
+       "n": "GHR Back Extensions",
+       "sets": [
+        {
+         "d": "4×12",
+         "w": "自选",
+         "r": "12"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "4×7 @ 67%",
+         "w": "Math.round(tdl*0.67/5)*5",
+         "r": "7"
+        }
+       ]
+      },
+      {
+       "n": "3ct Pause Bench",
+       "sets": [
+        {
+         "d": "3×5 @ 60%",
+         "w": "Math.round(tbp*0.6/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "SSB or Front or High Bar Pause Squat",
+       "sets": [
+        {
+         "d": "3×5 @ 8RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Wide Grip Seated Row (cable - mimic bench grip and movement)",
+       "sets": [
+        {
+         "d": "5×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 Pin Squat (pins set for full depth)",
+     "rows": [
+      {
+       "n": "Pin Squat (pins set for full depth)",
+       "sets": [
+        {
+         "d": "3×6 @ 65%",
+         "w": "Math.round(tsq*0.65/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "2Board Press",
+       "sets": [
+        {
+         "d": "3×6 @ 8RPE",
+         "w": "自选",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "1-Arm DB Rows",
+       "sets": [
+        {
+         "d": "5×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      },
+      {
+       "n": "Birddogs (reps per side)",
+       "sets": [
+        {
+         "d": "3×6",
+         "w": "自选",
+         "r": "6"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlift (pause barely off floor)",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlift (pause barely off floor)",
+       "sets": [
+        {
+         "d": "3×6 @ 63%",
+         "w": "Math.round(tdl*0.63/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "Rep Bench (Touch and Go)",
+       "sets": [
+        {
+         "d": "4×10 @ 63%",
+         "w": "Math.round(tbp*0.63/5)*5",
+         "r": "10"
+        }
+       ]
+      },
+      {
+       "n": "SLDL",
+       "sets": [
+        {
+         "d": "3×8 @ 40%",
+         "w": "Math.round(tdl*0.4/5)*5",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "Vertical Pull of choice",
+       "sets": [
+        {
+         "d": "4×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      },
+      {
+       "n": "Tricep movement of choice",
+       "sets": [
+        {
+         "d": "4×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 1-4 · 第2周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "4×6 @ 70%",
+         "w": "Math.round(tsq*0.7/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "Paused Bench",
+       "sets": [
+        {
+         "d": "4×6 @ 70%",
+         "w": "Math.round(tbp*0.7/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "Overhead Press",
+       "sets": [
+        {
+         "d": "3×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "Bent Over Row",
+       "sets": [
+        {
+         "d": "3×12",
+         "w": "自选",
+         "r": "12"
+        }
+       ]
+      },
+      {
+       "n": "GHR Back Extensions",
+       "sets": [
+        {
+         "d": "4×12",
+         "w": "自选",
+         "r": "12"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "4×6 @ 70%",
+         "w": "Math.round(tdl*0.7/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "3ct Pause Bench",
+       "sets": [
+        {
+         "d": "3×6 @ 60%",
+         "w": "Math.round(tbp*0.6/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "SSB or Front or High Bar Pause Squat",
+       "sets": [
+        {
+         "d": "3×6 @ 8RPE",
+         "w": "自选",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "Wide Grip Seated Row (cable - mimic bench grip and movement)",
+       "sets": [
+        {
+         "d": "5×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 Pin Squat (pins set for full depth)",
+     "rows": [
+      {
+       "n": "Pin Squat (pins set for full depth)",
+       "sets": [
+        {
+         "d": "3×5 @ 70%",
+         "w": "Math.round(tsq*0.7/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "2Board Press",
+       "sets": [
+        {
+         "d": "3×5 @ 8RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "1-Arm DB Rows",
+       "sets": [
+        {
+         "d": "5×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      },
+      {
+       "n": "Birddogs (reps per side)",
+       "sets": [
+        {
+         "d": "3×6",
+         "w": "自选",
+         "r": "6"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlift (pause barely off floor)",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlift (pause barely off floor)",
+       "sets": [
+        {
+         "d": "3×5 @ 65%",
+         "w": "Math.round(tdl*0.65/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Rep Bench (Touch and Go)",
+       "sets": [
+        {
+         "d": "4×10 @ 65%",
+         "w": "Math.round(tbp*0.65/5)*5",
+         "r": "10"
+        }
+       ]
+      },
+      {
+       "n": "SLDL",
+       "sets": [
+        {
+         "d": "3×8 @ 43%",
+         "w": "Math.round(tdl*0.43/5)*5",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "Vertical Pull of choice",
+       "sets": [
+        {
+         "d": "4×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      },
+      {
+       "n": "Tricep movement of choice",
+       "sets": [
+        {
+         "d": "4×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 1-4 · 第3周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "4×6 @ 73%",
+         "w": "Math.round(tsq*0.73/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "Paused Bench",
+       "sets": [
+        {
+         "d": "4×6 @ 73%",
+         "w": "Math.round(tbp*0.73/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "Overhead Press",
+       "sets": [
+        {
+         "d": "3×7",
+         "w": "自选",
+         "r": "7"
+        }
+       ]
+      },
+      {
+       "n": "Bent Over Row",
+       "sets": [
+        {
+         "d": "3×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "GHR Back Extensions",
+       "sets": [
+        {
+         "d": "5×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "4×6 @ 73%",
+         "w": "Math.round(tdl*0.73/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "3ct Pause Bench",
+       "sets": [
+        {
+         "d": "3×4 @ 65%",
+         "w": "Math.round(tbp*0.65/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "SSB or Front or High Bar Pause Squat",
+       "sets": [
+        {
+         "d": "3×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Wide Grip Seated Row (cable - mimic bench grip and movement)",
+       "sets": [
+        {
+         "d": "5×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 Pin Squat (pins set for full depth)",
+     "rows": [
+      {
+       "n": "Pin Squat (pins set for full depth)",
+       "sets": [
+        {
+         "d": "3×6 @ 68%",
+         "w": "Math.round(tsq*0.68/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "2Board Press",
+       "sets": [
+        {
+         "d": "3×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "1-Arm DB Rows",
+       "sets": [
+        {
+         "d": "5×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "Birddogs (reps per side)",
+       "sets": [
+        {
+         "d": "3×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlift (pause barely off floor)",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlift (pause barely off floor)",
+       "sets": [
+        {
+         "d": "3×6 @ 68%",
+         "w": "Math.round(tdl*0.68/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "Rep Bench (Touch and Go)",
+       "sets": [
+        {
+         "d": "4×10 @ 68%",
+         "w": "Math.round(tbp*0.68/5)*5",
+         "r": "10"
+        }
+       ]
+      },
+      {
+       "n": "SLDL",
+       "sets": [
+        {
+         "d": "3×6 @ 45%",
+         "w": "Math.round(tdl*0.45/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "Vertical Pull of choice",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "Tricep movement of choice",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 1-4 · 第4周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "5×5 @ 75%",
+         "w": "Math.round(tsq*0.75/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Paused Bench",
+       "sets": [
+        {
+         "d": "5×5 @ 75%",
+         "w": "Math.round(tbp*0.75/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Overhead Press",
+       "sets": [
+        {
+         "d": "3×7",
+         "w": "自选",
+         "r": "7"
+        }
+       ]
+      },
+      {
+       "n": "Bent Over Row",
+       "sets": [
+        {
+         "d": "3×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "GHR Back Extensions",
+       "sets": [
+        {
+         "d": "5×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "5×5 @ 75%",
+         "w": "Math.round(tdl*0.75/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "3ct Pause Bench",
+       "sets": [
+        {
+         "d": "3×3 @ 70%",
+         "w": "Math.round(tbp*0.7/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "SSB or Front or High Bar Pause Squat",
+       "sets": [
+        {
+         "d": "3×5 @ 8RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Wide Grip Seated Row (cable - mimic bench grip and movement)",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 Pin Squat (pins set for full depth)",
+     "rows": [
+      {
+       "n": "Pin Squat (pins set for full depth)",
+       "sets": [
+        {
+         "d": "3×5 @ 73%",
+         "w": "Math.round(tsq*0.73/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "2Board Press",
+       "sets": [
+        {
+         "d": "3×6 @ 8RPE",
+         "w": "自选",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "1-Arm DB Rows",
+       "sets": [
+        {
+         "d": "5×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "Birddogs (reps per side)",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlift (pause barely off floor)",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlift (pause barely off floor)",
+       "sets": [
+        {
+         "d": "3×5 @ 73%",
+         "w": "Math.round(tdl*0.73/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Rep Bench (Touch and Go)",
+       "sets": [
+        {
+         "d": "4×8 @ 70%",
+         "w": "Math.round(tbp*0.7/5)*5",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "SLDL",
+       "sets": [
+        {
+         "d": "3×6 @ 48%",
+         "w": "Math.round(tdl*0.48/5)*5",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "Vertical Pull of choice",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "Tricep movement of choice",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 5-8 · 第5周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "3×3 @ 80%",
+         "w": "Math.round(tsq*0.8/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "2×5 @ 68%",
+         "w": "Math.round(tsq*0.68/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "4×3 @ 80%",
+         "w": "Math.round(tbp*0.8/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "2×5 @ 68%",
+         "w": "Math.round(tbp*0.68/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "SLDL",
+       "sets": [
+        {
+         "d": "4×9 @ 8RPE",
+         "w": "自选",
+         "r": "9"
+        }
+       ]
+      },
+      {
+       "n": "Side Planks (seconds per side)",
+       "sets": [
+        {
+         "d": "3×x @ 30s",
+         "w": "自选",
+         "r": "x"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "3×3 @ 80%",
+         "w": "Math.round(tdl*0.8/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "2×5 @ 68%",
+         "w": "Math.round(tdl*0.68/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "2ct Pause Bench",
+       "sets": [
+        {
+         "d": "3×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "2×5 @ 65%",
+         "w": "Math.round(tsq*0.65/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Wide Grip Seated Row (mimic bench movement)",
+       "sets": [
+        {
+         "d": "4×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 2ct Pause Squat",
+     "rows": [
+      {
+       "n": "2ct Pause Squat",
+       "sets": [
+        {
+         "d": "4×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "6×5 @ 70%",
+         "w": "Math.round(tbp*0.7/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Feet Up Bench",
+       "sets": [
+        {
+         "d": "4×5 @ 8RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "2×5 @ 65%",
+         "w": "Math.round(tdl*0.65/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Vertical Pull of choice",
+       "sets": [
+        {
+         "d": "4×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlifts (pause barely off the floor)",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlifts (pause barely off the floor)",
+       "sets": [
+        {
+         "d": "4×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Touch and Go Bench",
+       "sets": [
+        {
+         "d": "3×6 @ 9RPE",
+         "w": "自选",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "Close Grip Incline Press",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "1-Arm DB Rows",
+       "sets": [
+        {
+         "d": "6×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 5-8 · 第6周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "4×3 @ 82%",
+         "w": "Math.round(tsq*0.82/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "2×5 @ 70%",
+         "w": "Math.round(tsq*0.7/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "5×3 @ 82%",
+         "w": "Math.round(tbp*0.82/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "3×5 @ 70%",
+         "w": "Math.round(tbp*0.7/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "SLDL",
+       "sets": [
+        {
+         "d": "4×8 @ 8RPE",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "Side Planks (seconds per side)",
+       "sets": [
+        {
+         "d": "4×x @ 30s",
+         "w": "自选",
+         "r": "x"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "4×3 @ 82%",
+         "w": "Math.round(tdl*0.82/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "2×5 @ 70%",
+         "w": "Math.round(tdl*0.7/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "2ct Pause Bench",
+       "sets": [
+        {
+         "d": "4×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "3×5 @ 68%",
+         "w": "Math.round(tsq*0.68/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Wide Grip Seated Row (mimic bench movement)",
+       "sets": [
+        {
+         "d": "4×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 2ct Pause Squat",
+     "rows": [
+      {
+       "n": "2ct Pause Squat",
+       "sets": [
+        {
+         "d": "5×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "6×4 @ 73%",
+         "w": "Math.round(tbp*0.73/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Feet Up Bench",
+       "sets": [
+        {
+         "d": "3×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "3×5 @ 68%",
+         "w": "Math.round(tdl*0.68/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Vertical Pull of choice",
+       "sets": [
+        {
+         "d": "4×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlifts (pause barely off the floor)",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlifts (pause barely off the floor)",
+       "sets": [
+        {
+         "d": "5×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Touch and Go Bench",
+       "sets": [
+        {
+         "d": "3×12 @ 10RPE",
+         "w": "自选",
+         "r": "12"
+        }
+       ]
+      },
+      {
+       "n": "Close Grip Incline Press",
+       "sets": [
+        {
+         "d": "4×7",
+         "w": "自选",
+         "r": "7"
+        }
+       ]
+      },
+      {
+       "n": "1-Arm DB Rows",
+       "sets": [
+        {
+         "d": "6×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 5-8 · 第7周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "5×2 @ 86%",
+         "w": "Math.round(tsq*0.86/5)*5",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "2×4 @ 72%",
+         "w": "Math.round(tsq*0.72/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "5×2 @ 86%",
+         "w": "Math.round(tbp*0.86/5)*5",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "2×4 @ 72%",
+         "w": "Math.round(tbp*0.72/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "SLDL",
+       "sets": [
+        {
+         "d": "4×8 @ 8RPE",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "Side Planks (seconds per side)",
+       "sets": [
+        {
+         "d": "4×x @ 45s",
+         "w": "自选",
+         "r": "x"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "5×2 @ 86%",
+         "w": "Math.round(tdl*0.86/5)*5",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "2×4 @ 72%",
+         "w": "Math.round(tdl*0.72/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "2ct Pause Bench",
+       "sets": [
+        {
+         "d": "3×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "2×5 @ 71%",
+         "w": "Math.round(tsq*0.71/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Wide Grip Seated Row (mimic bench movement)",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 2ct Pause Squat",
+     "rows": [
+      {
+       "n": "2ct Pause Squat",
+       "sets": [
+        {
+         "d": "4×5 @ 9RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "6×3 @ 75%",
+         "w": "Math.round(tbp*0.75/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Feet Up Bench",
+       "sets": [
+        {
+         "d": "4×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "2×5 @ 71%",
+         "w": "Math.round(tdl*0.71/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Vertical Pull of choice",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlifts (pause barely off the floor)",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlifts (pause barely off the floor)",
+       "sets": [
+        {
+         "d": "4×5 @ 8RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Touch and Go Bench",
+       "sets": [
+        {
+         "d": "4×7 @ 8RPE",
+         "w": "自选",
+         "r": "7"
+        }
+       ]
+      },
+      {
+       "n": "Close Grip Incline Press",
+       "sets": [
+        {
+         "d": "5×6",
+         "w": "自选",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "1-Arm DB Rows",
+       "sets": [
+        {
+         "d": "6×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 5-8 · 第8周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "4×3 @ 85%",
+         "w": "Math.round(tsq*0.85/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "3×4 @ 75%",
+         "w": "Math.round(tsq*0.75/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "5×3 @ 85%",
+         "w": "Math.round(tbp*0.85/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "3×4 @ 75%",
+         "w": "Math.round(tbp*0.75/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "SLDL",
+       "sets": [
+        {
+         "d": "4×7 @ 8RPE",
+         "w": "自选",
+         "r": "7"
+        }
+       ]
+      },
+      {
+       "n": "Side Planks (seconds per side)",
+       "sets": [
+        {
+         "d": "4×x @ 45s",
+         "w": "自选",
+         "r": "x"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "4×3 @ 85%",
+         "w": "Math.round(tdl*0.85/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "3×4 @ 75%",
+         "w": "Math.round(tdl*0.75/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "2ct Pause Bench",
+       "sets": [
+        {
+         "d": "4×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "2×4 @ 74%",
+         "w": "Math.round(tsq*0.74/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Wide Grip Seated Row (mimic bench movement)",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 2ct Pause Squat",
+     "rows": [
+      {
+       "n": "2ct Pause Squat",
+       "sets": [
+        {
+         "d": "4×2 @ 9RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "6×5 @ 68%",
+         "w": "Math.round(tbp*0.68/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Feet Up Bench",
+       "sets": [
+        {
+         "d": "4×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "2×4 @ 74%",
+         "w": "Math.round(tdl*0.74/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Vertical Pull of choice",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlifts (pause barely off the floor)",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlifts (pause barely off the floor)",
+       "sets": [
+        {
+         "d": "4×2 @ 9RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Touch and Go Bench",
+       "sets": [
+        {
+         "d": "4×5 @ 8RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Close Grip Incline Press",
+       "sets": [
+        {
+         "d": "4×10",
+         "w": "自选",
+         "r": "10"
+        }
+       ]
+      },
+      {
+       "n": "1-Arm DB Rows",
+       "sets": [
+        {
+         "d": "6×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 9-11 · 第9周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "5×4 @ 82%",
+         "w": "Math.round(tsq*0.82/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "2×4 @ 71%",
+         "w": "Math.round(tsq*0.71/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "6×4 @ 82%",
+         "w": "Math.round(tbp*0.82/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "2×4 @ 71%",
+         "w": "Math.round(tbp*0.71/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Bent Over Row",
+       "sets": [
+        {
+         "d": "4×8 @ 8RPE",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "Rolling Planks (total reps, not per side)",
+       "sets": [
+        {
+         "d": "3×20",
+         "w": "自选",
+         "r": "20"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "4×4 @ 82%",
+         "w": "Math.round(tdl*0.82/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "2×4 @ 71%",
+         "w": "Math.round(tdl*0.71/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Pin Press (chest level)",
+       "sets": [
+        {
+         "d": "4×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "3×5 @ 68%",
+         "w": "Math.round(tsq*0.68/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Wide Grip Seated Row (cable - mimic bench grip and movement)",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 2ct Pause Squats",
+     "rows": [
+      {
+       "n": "2ct Pause Squats",
+       "sets": [
+        {
+         "d": "1+2F×4 @ 9RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "6×5 @ 72%",
+         "w": "Math.round(tbp*0.72/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Close Grip Bench Press",
+       "sets": [
+        {
+         "d": "1+2R×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "2×5 @ 68%",
+         "w": "Math.round(tdl*0.68/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Vertical Pull of choice",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlifts (just off floor)",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlifts (just off floor)",
+       "sets": [
+        {
+         "d": "1+2F×4 @ 9RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Bench +mini bands",
+       "sets": [
+        {
+         "d": "1+1F×8 @ 9RPE",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "Barbell Overhead Press",
+       "sets": [
+        {
+         "d": "1+3R×7 @ 8RPE",
+         "w": "自选",
+         "r": "7"
+        }
+       ]
+      },
+      {
+       "n": "1-Arm DB Rows",
+       "sets": [
+        {
+         "d": "5×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 9-11 · 第10周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "6×3 @ 85%",
+         "w": "Math.round(tsq*0.85/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "2×4 @ 74%",
+         "w": "Math.round(tsq*0.74/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "7×4 @ 85%",
+         "w": "Math.round(tbp*0.85/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "2×4 @ 74%",
+         "w": "Math.round(tbp*0.74/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Bent Over Row",
+       "sets": [
+        {
+         "d": "4×6 @ 8RPE",
+         "w": "自选",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "Rolling Planks (total reps, not per side)",
+       "sets": [
+        {
+         "d": "4×20",
+         "w": "自选",
+         "r": "20"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "5×3 @ 85%",
+         "w": "Math.round(tdl*0.85/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "2×4 @ 74%",
+         "w": "Math.round(tdl*0.74/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Pin Press (chest level)",
+       "sets": [
+        {
+         "d": "4×5 @ 8RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "3×5 @ 71%",
+         "w": "Math.round(tsq*0.71/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Wide Grip Seated Row (cable - mimic bench grip and movement)",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 2ct Pause Squats",
+     "rows": [
+      {
+       "n": "2ct Pause Squats",
+       "sets": [
+        {
+         "d": "1+3F×2 @ 9RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "6×4 @ 75%",
+         "w": "Math.round(tbp*0.75/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Close Grip Bench Press",
+       "sets": [
+        {
+         "d": "1+1F×3 @ 9RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "3×5 @ 71%",
+         "w": "Math.round(tdl*0.71/5)*5",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Vertical Pull of choice",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlifts (just off floor)",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlifts (just off floor)",
+       "sets": [
+        {
+         "d": "1+3F×2 @ 9RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Bench +mini bands",
+       "sets": [
+        {
+         "d": "1+1F×7 @ 9RPE",
+         "w": "自选",
+         "r": "7"
+        }
+       ]
+      },
+      {
+       "n": "Barbell Overhead Press",
+       "sets": [
+        {
+         "d": "1+2R×8 @ 8RPE",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      },
+      {
+       "n": "1-Arm DB Rows",
+       "sets": [
+        {
+         "d": "5×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 9-11 · 第11周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "3×3 @ 83%",
+         "w": "Math.round(tsq*0.83/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "2×4 @ 76%",
+         "w": "Math.round(tsq*0.76/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "3×3 @ 83%",
+         "w": "Math.round(tbp*0.83/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "2×4 @ 76%",
+         "w": "Math.round(tbp*0.76/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Bent Over Row",
+       "sets": [
+        {
+         "d": "4×5 @ 8RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Rolling Planks (total reps, not per side)",
+       "sets": [
+        {
+         "d": "4×24",
+         "w": "自选",
+         "r": "24"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "3×3 @ 83%",
+         "w": "Math.round(tdl*0.83/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "2×4 @ 76%",
+         "w": "Math.round(tdl*0.76/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Pin Press (chest level)",
+       "sets": [
+        {
+         "d": "4×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "3×4 @ 74%",
+         "w": "Math.round(tsq*0.74/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Wide Grip Seated Row (cable - mimic bench grip and movement)",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 2ct Pause Squats",
+     "rows": [
+      {
+       "n": "2ct Pause Squats",
+       "sets": [
+        {
+         "d": "1+1R×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "5×3 @ 78%",
+         "w": "Math.round(tbp*0.78/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Close Grip Bench Press",
+       "sets": [
+        {
+         "d": "1+1R×2 @ 8RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "3×4 @ 74%",
+         "w": "Math.round(tdl*0.74/5)*5",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Vertical Pull of choice",
+       "sets": [
+        {
+         "d": "4×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlifts (just off floor)",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlifts (just off floor)",
+       "sets": [
+        {
+         "d": "1+1R×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Bench +mini bands",
+       "sets": [
+        {
+         "d": "1+1F×6 @ 9RPE",
+         "w": "自选",
+         "r": "6"
+        }
+       ]
+      },
+      {
+       "n": "Barbell Overhead Press",
+       "sets": [
+        {
+         "d": "1+1R×5 @ 8RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "1-Arm DB Rows",
+       "sets": [
+        {
+         "d": "5×8",
+         "w": "自选",
+         "r": "8"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 12-15 · 第12周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "1×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat (% of E1RM)",
+       "sets": [
+        {
+         "d": "6×5 @ 0.65",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "1×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench (% of E1RM)",
+       "sets": [
+        {
+         "d": "7×5 @ 0.65",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Overhead Press",
+       "sets": [
+        {
+         "d": "1+2F×6 @ 9RPE",
+         "w": "自选",
+         "r": "6"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "1×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift (% of E1RM)",
+       "sets": [
+        {
+         "d": "6×5 @ 0.65",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "2ct Pause Bench",
+       "sets": [
+        {
+         "d": "1+2F×4 @ 9RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "High Bar Squat",
+       "sets": [
+        {
+         "d": "1+2R×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 Pin Squat",
+     "rows": [
+      {
+       "n": "Pin Squat",
+       "sets": [
+        {
+         "d": "1×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Pin Squat",
+       "sets": [
+        {
+         "d": "1+1F×4 @ 9RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Close Grip Bench",
+       "sets": [
+        {
+         "d": "1+2F×3 @ 9RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Feet Up Bench",
+       "sets": [
+        {
+         "d": "1+1F×5 @ 9RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlifts",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlifts",
+       "sets": [
+        {
+         "d": "1×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "2ct Pause Deadlifts",
+       "sets": [
+        {
+         "d": "1+2F×5 @ 9RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Touch and Go Bench",
+       "sets": [
+        {
+         "d": "1+3R×5 @ 8RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 12-15 · 第13周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "1×2 @ 8RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat (% of E1RM)",
+       "sets": [
+        {
+         "d": "6×5 @ 0.68",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "1×2 @ 8RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench (% of E1RM)",
+       "sets": [
+        {
+         "d": "7×5 @ 0.68",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Overhead Press",
+       "sets": [
+        {
+         "d": "1+1F×7 @ 9RPE",
+         "w": "自选",
+         "r": "7"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "1×2 @ 8RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift (% of E1RM)",
+       "sets": [
+        {
+         "d": "6×5 @ 0.68",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "2ct Pause Bench",
+       "sets": [
+        {
+         "d": "1+2R×5 @ 8RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "High Bar Squat",
+       "sets": [
+        {
+         "d": "1+1F×3 @ 9RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 Pin Squat",
+     "rows": [
+      {
+       "n": "Pin Squat",
+       "sets": [
+        {
+         "d": "1×2 @ 8RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Pin Squat",
+       "sets": [
+        {
+         "d": "1+1F×5 @ 9RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      },
+      {
+       "n": "Close Grip Bench",
+       "sets": [
+        {
+         "d": "1+1F×2 @ 9RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Feet Up Bench",
+       "sets": [
+        {
+         "d": "1+1F×6 @ 9RPE",
+         "w": "自选",
+         "r": "6"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlifts",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlifts",
+       "sets": [
+        {
+         "d": "1×2 @ 8RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "2ct Pause Deadlifts",
+       "sets": [
+        {
+         "d": "1+2R×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Touch and Go Bench",
+       "sets": [
+        {
+         "d": "1+3R×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 12-15 · 第14周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "1×1 @ 8RPE",
+         "w": "自选",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat (% of E1RM)",
+       "sets": [
+        {
+         "d": "4×4 @ 0.72",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "1×1 @ 9RPE",
+         "w": "自选",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench (% of E1RM)",
+       "sets": [
+        {
+         "d": "5×4 @ 0.72",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Overhead Press",
+       "sets": [
+        {
+         "d": "1+2R×6 @ 8RPE",
+         "w": "自选",
+         "r": "6"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "1×1 @ 8RPE",
+         "w": "自选",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift (% of E1RM)",
+       "sets": [
+        {
+         "d": "4×4 @ 0.72",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "2ct Pause Bench",
+       "sets": [
+        {
+         "d": "1+2F×2 @ 9RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "High Bar Squat",
+       "sets": [
+        {
+         "d": "1+2F×4 @ 9RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 Pin Squat",
+     "rows": [
+      {
+       "n": "Pin Squat",
+       "sets": [
+        {
+         "d": "1×1 @ 8RPE",
+         "w": "自选",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "Pin Squat",
+       "sets": [
+        {
+         "d": "1+1F×2 @ 9RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Close Grip Bench",
+       "sets": [
+        {
+         "d": "1+2R×3 @ 8RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Feet Up Bench",
+       "sets": [
+        {
+         "d": "1+1F×3 @ 9RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlifts",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlifts",
+       "sets": [
+        {
+         "d": "1×1 @ 8RPE",
+         "w": "自选",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "2ct Pause Deadlifts",
+       "sets": [
+        {
+         "d": "1+2F×2 @ 9RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Touch and Go Bench",
+       "sets": [
+        {
+         "d": "1+1F×3 @ 9RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Weeks 12-15 · 第15周",
+   "days": [
+    {
+     "name": "D1 Competition Squat",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "1×1 @ 8RPE",
+         "w": "自选",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat (% of E1RM)",
+       "sets": [
+        {
+         "d": "3×3 @ 0.76",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "1×1 @ 9RPE",
+         "w": "自选",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench (% of E1RM)",
+       "sets": [
+        {
+         "d": "4×3 @ 0.76",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Overhead Press",
+       "sets": [
+        {
+         "d": "1+1F×5 @ 9RPE",
+         "w": "自选",
+         "r": "5"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 Competition Deadlift",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "1×1 @ 8RPE",
+         "w": "自选",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift (% of E1RM)",
+       "sets": [
+        {
+         "d": "3×3 @ 0.76",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "2ct Pause Bench",
+       "sets": [
+        {
+         "d": "1+2R×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "High Bar Squat",
+       "sets": [
+        {
+         "d": "1+1R×2 @ 8RPE",
+         "w": "自选",
+         "r": "2"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 Pin Squat",
+     "rows": [
+      {
+       "n": "Pin Squat",
+       "sets": [
+        {
+         "d": "1×1 @ 8RPE",
+         "w": "自选",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "Pin Squat",
+       "sets": [
+        {
+         "d": "1+2F×4 @ 8RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Close Grip Bench",
+       "sets": [
+        {
+         "d": "1+1F×4 @ 9RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Feet Up Bench",
+       "sets": [
+        {
+         "d": "1+1F×4 @ 9RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2ct Pause Deadlifts",
+     "rows": [
+      {
+       "n": "2ct Pause Deadlifts",
+       "sets": [
+        {
+         "d": "1×1 @ 8RPE",
+         "w": "自选",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "2ct Pause Deadlifts",
+       "sets": [
+        {
+         "d": "1+2F×4 @ 9RPE",
+         "w": "自选",
+         "r": "4"
+        }
+       ]
+      },
+      {
+       "n": "Touch and Go Bench",
+       "sets": [
+        {
+         "d": "1+2F×3 @ 9RPE",
+         "w": "自选",
+         "r": "3"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Taper Week · 比赛周",
+   "days": [
+    {
+     "name": "D1 5 Days from Competition",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "1×1 @ Opener",
+         "w": "Opener",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "3×2 @ 82%",
+         "w": "Math.round(tsq*0.82/5)*5",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "1×1 @ Opener",
+         "w": "Opener",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "3×2 @ 84%",
+         "w": "Math.round(tbp*0.84/5)*5",
+         "r": "2"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D2 4 Days from Competition",
+     "rows": [
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "1×1 @ Opener",
+         "w": "Opener",
+         "r": "1"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "2×2 @ 82%",
+         "w": "Math.round(tdl*0.82/5)*5",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "4×1 @ 85%",
+         "w": "Math.round(tbp*0.85/5)*5",
+         "r": "1"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D3 3 Days From Competition",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "1×1 @ 85%",
+         "w": "Math.round(tsq*0.85/5)*5",
+         "r": "1"
+        },
+        {
+         "d": "2×2 @ 78%",
+         "w": "Math.round(tsq*0.78/5)*5",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "1×1 @ 85%",
+         "w": "Math.round(tbp*0.85/5)*5",
+         "r": "1"
+        },
+        {
+         "d": "3×2 @ 78%",
+         "w": "Math.round(tbp*0.78/5)*5",
+         "r": "2"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "1×1 @ 82%",
+         "w": "Math.round(tdl*0.82/5)*5",
+         "r": "1"
+        },
+        {
+         "d": "2×2 @ 75%",
+         "w": "Math.round(tdl*0.75/5)*5",
+         "r": "2"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "D4 2 Days From Competition",
+     "rows": [
+      {
+       "n": "Competition Squat",
+       "sets": [
+        {
+         "d": "2×3 @ 75%",
+         "w": "Math.round(tsq*0.75/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Pause Bench",
+       "sets": [
+        {
+         "d": "3×3 @ 78%",
+         "w": "Math.round(tbp*0.78/5)*5",
+         "r": "3"
+        }
+       ]
+      },
+      {
+       "n": "Competition Deadlift",
+       "sets": [
+        {
+         "d": "1×3 @ 75%",
+         "w": "Math.round(tdl*0.75/5)*5",
+         "r": "3"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
