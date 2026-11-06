@@ -282,15 +282,27 @@ function bigThree(pid){
       }
     }
   });
-  /* 从已完成日志中取各动作最佳 e1RM（Epley：kg×(1+次数/30)） */
-  const GRP={sq:/深蹲|squat/i, bp:/卧推|bench/i, dl:/硬拉|deadlift/i};
+  /* 从已完成日志中取各动作最佳 e1RM（Epley：kg×(1+次数/30)）
+     只统计「主项及其直接变式」，辅助/孤立动作不计入三大项预测 */
+  const GRP={
+    sq:/赛蹲|比赛深蹲|competition\s*squat|^深蹲$|^高杠深蹲$|^pause[sd]?\s+squat|暂停深蹲|^sq$/i,
+    bp:/赛推(?!·轻)|比赛卧推|competition\s*(pause\s*)?bench|^卧推$|^pause[sd]?\s*bench|暂停卧推|^bp$/i,
+    dl:/传统(?!·轻)|比赛硬拉|competition\s*deadlift|^硬拉$|^deadlift$|^dl$/i
+  };
   const best={sq:0,bp:0,dl:0};
   const logs=getLogs(pid);
+  const vars=varsOf(pid);
   t.weeks.forEach((w,wi)=>w.d.forEach((day,di)=>{
     const rec=logs[dayKey(wi,di)]; if(!rec||!rec.sets) return;
     day.g.forEach((g,gi)=>g.s.forEach((s,si)=>{
       const it=rec.sets[gi+'_'+si]; if(!it) return;
-      const kg=+it.kg, reps=+it.reps;
+      /* 重量：优先取日志，其次取计划预填值（预填未改动时不写日志） */
+      let kg=+it.kg;
+      if(!isFinite(kg)||kg<=0){
+        const pw=planWeightOf(s,vars);
+        kg=(pw!==null&&isFinite(pw))?+pw:NaN;
+      }
+      const reps=+it.reps;
       if(!isFinite(kg)||kg<=0||!isFinite(reps)||reps<=0) return;
       for(const lift in GRP){
         if(GRP[lift].test(g.n)){
@@ -304,21 +316,59 @@ function bigThree(pid){
   const baseSum=(base.sq||0)+(base.bp||0)+(base.dl||0);
   const hasBase=baseSum>0;
   const hasLog=best.sq||best.bp||best.dl;
-  const predSum=hasLog? r25(best.sq+best.bp+best.dl) : (hasBase? baseSum : null);
-  return {base, baseSum, hasBase, predSum, hasLog, best};
+  /* 当前预测 = max(首填极限, 日志推算)；只升不降，练轻组不会把数字拉低 */
+  const cur={}, improved={};
+  ['sq','bp','dl'].forEach(k=>{
+    const bs=(base[k]!==null&&base[k]!==undefined)? +base[k] : 0;
+    const lg=best[k]||0;
+    cur[k]=Math.max(bs,lg);
+    improved[k]= lg>bs;          /* 该动作是否被训练成绩刷新过 */
+  });
+  const predSum=r25((cur.sq||0)+(cur.bp||0)+(cur.dl||0));
+  return {base, baseSum, hasBase, predSum, hasLog, best, cur, improved};
 }
 function bigThreeHTML(pid){
   const b=bigThree(pid); if(!b) return '';
-  const diff=(b.hasLog&&b.hasBase)? Math.round(b.predSum-b.baseSum) : null;
-  const diffTxt=diff===null? '' : ` <span style="color:${diff>=0?'var(--acc)':'#e08a6a'}">(${diff>=0?'+':''}${diff} kg)</span>`;
-  const liftTxt=[['sq','蹲'],['bp','推'],['dl','拉']].map(([k,l])=>`${l} ${b.best[k]?fmtW(b.best[k]):(b.base[k]!==null&&b.base[k]!==undefined?fmtW(r25(b.base[k]*0.9)):'—')}`).join(' · ');
-  const predLine=b.hasLog? fmtW(b.predSum)+' kg'
-    : (b.hasBase? fmtW(b.baseSum)+' kg（暂无训练记录，暂按首填合计计）' : '—');
-  return `<div class="lgsec" id="b3sec"><div class="lgsh">🏆 三大项预测合计（深蹲+卧推+硬拉）</div>
+  const NAMES={sq:'深蹲', bp:'卧推', dl:'硬拉'};
+  const anyUpd=b.improved.sq||b.improved.bp||b.improved.dl;
+  const diffTot=(anyUpd&&b.hasBase)? Math.round(b.predSum-b.baseSum) : null;
+  const cls=v=> v>=0?' up':' down';
+  const sgn=v=> (v>0?'+':'')+v;
+
+  /* 逐项一行：动作 | 首次填写 | 当前预测 | 变化 */
+  const rows=['sq','bp','dl'].map(k=>{
+    const base=b.base[k];
+    const hasBaseV=(base!==null&&base!==undefined);
+    const pred=b.cur[k]||null;
+    const upd=b.improved[k];
+    const d=(upd&&hasBaseV)? Math.round(pred-base) : null;
+    return `<div class="b3r">
+      <span class="b3n">${NAMES[k]}</span>
+      <span class="b3v">${hasBaseV?fmtW(base)+' kg':'—'}</span>
+      <span class="b3v${upd?'':' dim'}">${pred!==null?fmtW(pred)+' kg':'—'}${upd?'':' <i class="b3t">按首填</i>'}</span>
+      <span class="b3d${d===null?'':cls(d)}">${d===null?'—':sgn(d)+' kg'}</span>
+    </div>`;
+  }).join('');
+
+  /* 合计行 */
+  const baseSumTxt = b.hasBase? fmtW(b.baseSum)+' kg' : '—';
+  const predSumTxt = b.hasBase? fmtW(b.predSum)+' kg' : '—';
+  const totRow=`<div class="b3r tot">
+      <span class="b3n">合计</span>
+      <span class="b3v">${baseSumTxt}</span>
+      <span class="b3v">${predSumTxt}</span>
+      <span class="b3d${diffTot===null?'':cls(diffTot)}">${diffTot===null?'—':sgn(diffTot)+' kg'}</span>
+    </div>`;
+
+  const tip = b.hasLog
+    ? '当前预测取「首次填写极限」与「训练日志推算值」中的较大者，只升不降'
+    : '暂无训练记录，暂以首次填写极限计；练完并填写实次后自动更新';
+
+  return `<div class="lgsec" id="b3sec"><div class="lgsh">🏆 三大项 · 极限与预测对比</div>
     <div class="b3box">
-      <div class="b3main"><b>${predLine}</b><span>预测合计${diffTxt}</span></div>
-      <div class="b3sub">依据训练日志中的最佳单组成绩估算：${liftTxt}</div>
-      <div class="b3sub">对比首次填写极限合计：<b>${b.hasBase?fmtW(b.baseSum)+' kg':'未填写'}</b></div>
+      <div class="b3head"><span>动作</span><span>首次填写</span><span>当前预测</span><span>变化</span></div>
+      ${rows}${totRow}
+      <div class="b3sub" style="margin-top:8px">${tip}</div>
     </div></div>`;
 }
 
@@ -570,56 +620,54 @@ function dayHTML(t){
       const reps=repsOf(s);
       const defKg=(pw!==null)?fmtW(pw):'';
       const kgVal=(lg.kg!==undefined&&lg.kg!==null?lg.kg:'');
-      /* 实次默认＝计划次数，用户也可改；只改实次不会覆盖计划 */
-      const repsVal=(lg.reps!==undefined?lg.reps:'');
+      /* 实次不预填：留空由训练者手动填写，避免「未训练却记成完成」 */
+      const repsVal=(lg.reps!==undefined&&lg.reps!==null?lg.reps:'');
       html+=`<div class="trow${isSetDone(lg)?' done':''}">
         <span class="tno">${n+1}</span>
         <span class="tplan">${esc(planText(s,vars))}${(s.tn&&s.t)?`<i class="qnote" title="${esc(s.t)}" onclick="toast('${esc(s.t).replace(/'/g,"\\'")}')">?</i>`:''}</span>
         <span class="treps">${esc(reps||'—')}</span>
         <input type="number" inputmode="decimal" step="2.5" min="0" class="kgI" data-gi="${gi}" data-si="${si}" value="${kgVal!==''?kgVal:defKg}" placeholder="${defKg||'kg'}" onchange="saveSet(${gi},${si},'kg',this.value)">
-        <input type="number" inputmode="numeric" step="1" min="0" class="rpI" data-gi="${gi}" data-si="${si}" value="${repsVal!==''?repsVal:(reps.match(/^\d+$/)?reps:'')}" placeholder="${esc(reps||'次')}" onchange="saveSet(${gi},${si},'reps',this.value)">
+        <input type="number" inputmode="numeric" step="1" min="0" class="rpI" data-gi="${gi}" data-si="${si}" value="${repsVal}" placeholder="${esc(reps||'次')}" onchange="saveSet(${gi},${si},'reps',this.value)">
         <input type="number" inputmode="decimal" step="0.5" min="1" max="10" value="${lg.rpe!==undefined?lg.rpe:''}" placeholder="—" onchange="saveSet(${gi},${si},'rpe',this.value)">
       </div>`;
     });
   });
-  html+=`<div class="lgnote" style="margin-top:10px">💡 重量、实次均已按计划预填，可直接改；点「✓ 本日完成」即按预填值保存并打勾。</div>
-  <div class="daydone"><button class="btnDone" onclick="completeDay()">✓ 本日完成（保存预填数据）</button></div>
+  html+=`<div class="lgnote" style="margin-top:10px">💡 重量已按计划预填（可直接改）；<b>实次请训练后手动填写</b>，填了才算完成。点「✓ 本日完成」保存当前数据。</div>
+  <div class="daydone"><button class="btnDone" onclick="completeDay()">✓ 本日完成（保存当前数据）</button></div>
   <div class="daydone"><button class="btnClear" onclick="askClearDay()">🗑 清空今日填报</button></div>
   <div class="lgf" style="margin-top:8px"><label>当日备注</label><input value="${esc(rec.note||'')}" placeholder="状态、疼痛、动作调整…" onchange="saveNote(this.value)"></div>`;
   return html;
 }
 
-/* 一键完成：把页面里预填的重量/实次全部落库（模拟真实训练＝按计划完成） */
+/* 一键完成：保存当前已填的重量/实次；未填实次的组不写入（留给训练者手动填） */
 function completeDay(){
   const rows=[...document.querySelectorAll('#dayBox .trow')];
   const t=getT(curPlanId), vars=varsOf(curPlanId);
   const day=t.weeks[curW].d[curD];
   const logs=getLogs(curPlanId); const k=dayKey(curW,curD);
   logs[k]=logs[k]||{sets:{}}; logs[k].sets=logs[k].sets||{};
+  let missing=0;
   rows.forEach(r=>{
     const kg=r.querySelector('.kgI'), rp=r.querySelector('.rpI');
     if(!kg||!rp) return;
     const gi=+kg.dataset.gi, si=+kg.dataset.si;
     const sk=gi+'_'+si;
-    let kv=parseFloat(kg.value);
-    let rv=parseFloat(rp.value);
-    /* 没预填重量（自选重量动作）→ 仍记为完成，重量记 0，实次按计划或 1 记 */
-    if(!isFinite(kv)) kv=0;
-    if(!isFinite(rv)){
-      const s=(day.g[gi]&&day.g[gi].s[si])||{};
-      const rr=parseFloat(repsOf(s)); rv=isFinite(rr)?rr:1;
-    }
-    if(rv<=0) rv=1;
+    const kv=parseFloat(kg.value);
+    const rv=parseFloat(rp.value);
+    if(!isFinite(rv)||rv<=0){ missing++; return; }   /* 实次未填 → 跳过，不算完成 */
     logs[k].sets[sk]=logs[k].sets[sk]||{};
-    logs[k].sets[sk].kg=r25(kv); logs[k].sets[sk].reps=rv;
+    logs[k].sets[sk].kg = isFinite(kv)? r25(kv) : 0;
+    logs[k].sets[sk].reps = rv;
   });
   setLogs(curPlanId,logs);
   const gb=document.getElementById('gridBox'); if(gb) gb.innerHTML=gridHTML(getT(curPlanId));
   rerenderDay(); const st=dayState(curPlanId,curW,curD);
   const dh=document.querySelector('.daypr'); if(dh) dh.innerHTML=`${st.done}/${st.total} 组${st.complete?' · 已打勾 ✓':''}`;
+  refreshB3();
   refreshBar();
   refreshRoll();
-  toast(st.complete?'本日完成 ✓ 已保存':'还有未预填重量的组，请手动补填');
+  if(missing>0) toast(`已保存 · 还有 ${missing} 组未填实次，填完才算完成`);
+  else toast(st.complete?'本日完成 ✓ 已保存':'已保存');
 }
 
 function saveSet(gi,si,f,v){
@@ -642,9 +690,16 @@ function saveSet(gi,si,f,v){
   const st=dayState(curPlanId,curW,curD);
   const dh=document.querySelector('.daypr');
   if(dh) dh.innerHTML=`${st.done}/${st.total} 组${st.complete?' · 已打勾 ✓':''}`;
+  refreshB3();
   refreshBar();
   refreshRoll();
+  if(f==='reps') return;   /* 填实次时不弹提示，避免每次击键都弹 */
   toast(st.complete?'本日完成 ✓ 已保存':'已自动保存');
+}
+/* 刷新三大项对比（不重建整个页面） */
+function refreshB3(){
+  const el=document.getElementById('b3sec'); if(!el) return;
+  el.outerHTML=bigThreeHTML(curPlanId);
 }
 function rerenderDay(){ const box=document.getElementById('dayBox'); if(box) box.innerHTML=dayHTML(getT(curPlanId)) }
 function saveNote(v){

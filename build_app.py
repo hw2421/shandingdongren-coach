@@ -123,6 +123,19 @@ header{padding:26px 20px 14px;background:var(--bg)}
 .b3box .b3main span{color:var(--sub);font-size:11px}
 .b3box .b3sub{color:var(--sub);font-size:10.5px;margin-top:4px;line-height:1.5}
 .b3box .b3sub b{color:var(--txt)}
+.b3head,.b3r{display:grid;grid-template-columns:1.1fr 1fr 1fr .9fr;gap:6px;align-items:center;padding:5px 2px;border-bottom:1px solid rgba(255,255,255,.05)}
+.b3head{color:var(--sub);font-size:10.5px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.b3head span:not(:first-child),.b3v,.b3d{text-align:right;font-variant-numeric:tabular-nums}
+.b3n{color:var(--txt);font-size:12px}
+.b3v{color:var(--txt);font-size:12.5px}
+.b3d{font-size:11.5px;color:var(--sub)}
+.b3d.up{color:#e0603f}
+.b3d.down{color:#4fa87a}
+.b3r.tot{border-bottom:none;border-top:1px solid var(--line);margin-top:2px;padding-top:7px}
+.b3r.tot .b3n{color:var(--acc);font-weight:600}
+.b3r.tot .b3v{color:var(--acc);font-weight:600;font-size:13.5px}
+.b3v.dim{color:var(--sub)}
+.b3t{font-style:normal;font-size:9.5px;color:var(--sub);opacity:.8}
 .searchbar{margin:16px 0 4px;position:relative}
 .searchbar input{width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px 11px 40px;color:var(--txt);font-size:15px;outline:none}
 .searchbar input:focus{border-color:var(--acc)}
