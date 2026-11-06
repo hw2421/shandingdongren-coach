@@ -19,14 +19,73 @@ function r25(x){ if(!isFinite(x)) return null; return Math.round(x/2.5)*2.5 }
 function fmtW(x){ if(x===null||x===undefined||!isFinite(x)) return ''; const v=Math.round(x*10)/10; return (v%1===0? v.toFixed(0): v.toFixed(1)); }
 
 /* ---------- 配重换算 ---------- */
+/* 取用户填过的极限；没填则用计划默认值 */
+function maxOf(pid,k){
+  const mx=getMaxes(pid), t=getT(pid);
+  let n=parseFloat(mx[k]);
+  if(!isFinite(n) && t){
+    const inp=t.inputs.find(i=>i.k===k);
+    if(inp && inp.def!==undefined && inp.def!==null) n=parseFloat(inp.def);
+  }
+  return isFinite(n)?n:null;
+}
+
+/* 取出训练日志里某个 set 的实际次数（AMAP 推算用） */
+function actualReps(pid,wi,di,gi,si){
+  const rec=getLogs(pid)[dayKey(wi,di)];
+  if(!rec||!rec.sets) return null;
+  const it=rec.sets[gi+'_'+si];
+  const n=it?parseFloat(it.reps):NaN;
+  return isFinite(n)&&n>0?n:null;
+}
+
+/* ===== Juggernaut 滚动 TM：模块1=90%×1RM；模块2~4=上模块TM+（上模块第3周主项末组实次−标准次数）×2.5 ===== */
+function jmTM(pid, mod, lift){
+  const t=getT(pid); if(!t) return null;
+  const rm=maxOf(pid, lift); if(rm===null) return null;
+  const base = r25(rm*0.9);
+  if(mod<=1) return base;
+  let tm=base;
+  /* 每个模块的「第3周（转化期）」= 该模块第3周全，主项末组标准次数见下表 */
+  const STD={1:10, 2:8, 3:5, 4:3};      // 各模块转化期末组 AMAP 的「标准次数」
+  for(let m=1;m<mod;m++){
+    const wi=(m-1)*4+2;                  // 第 m 模块的第3周索引
+    const w=t.weeks[wi]; if(!w) break;
+    /* 找该周主项动作的最后一组 */
+    let got=null;
+    w.d.forEach((day,di)=>{
+      if(got!==null) return;
+      day.g.forEach((g,gi)=>{
+        if(got!==null) return;
+        if(!/Comp (Squat|Bench|Deadlift)|比赛(深蹲|卧推|硬拉)/i.test(g.n)) return;
+        if(!new RegExp(lift==='sq'?'Squat|深蹲':lift==='bp'?'Bench|卧推':'Deadlift|硬拉','i').test(g.n)) return;
+        const si=g.s.length-1;
+        const r=actualReps(pid,wi,di,gi,si);
+        if(r!==null) got=r;
+      });
+    });
+    if(got===null) break;                /* 没填 → 后续 TM 停在此，等用户填完 */
+    tm = r25(tm + 2.5*(got - (STD[m]||5)));
+  }
+  return tm;
+}
+
 function varsOf(pid){
   const mx=getMaxes(pid), t=getT(pid), v={};
-  if(t) t.inputs.forEach(i=>{
-    /* 用户填过的优先；未填则用计划自带默认值，保证首次进入即可显示计划重量 */
-    let n=parseFloat(mx[i.k]);
-    if(!isFinite(n) && i.def!==undefined && i.def!==null) n=parseFloat(i.def);
-    if(isFinite(n)) v[i.k]=n;
+  if(!t) return v;
+  t.inputs.forEach(i=>{
+    const n=maxOf(pid,i.k);
+    if(n!==null) v[i.k]=n;
   });
+  /* Juggernaut：注入 TM1_sq ~ TM4_ohp 四个模块的训练上限 */
+  if(pid==='jm' && t.rolling){
+    [1,2,3,4].forEach(m=>{
+      ['sq','bp','dl','ohp'].forEach(l=>{
+        const tm=jmTM(pid,m,l);
+        if(tm!==null && tm>0) v['TM'+m+'_'+l]=tm;
+      });
+    });
+  }
   return v;
 }
 const CALC_CACHE={};
@@ -57,7 +116,13 @@ function planText(set, vars){
   const w=planWeightOf(set,vars);
   if(w!==null) return fmtW(w)+' kg';
   if(set.e) return '待填极限';
-  return set.d || set.t || '—';
+  /* 无强度/无重量的辅助动作：计划列只显示 *（次数已在「次」列） */
+  if(set.x==='*' || set.nomark==='*') return '*';
+  const d=String(set.d||'').trim(), t=String(set.t||'').trim();
+  if(!d && !t) return '*';
+  if(d===t) return d;
+  if(d && /^[0-9\s+~\-]+$/.test(d)) return '*';
+  return d || t || '*';
 }
 // 次数字段：优先 r，其次 d 里抽取
 function repsOf(set){
@@ -111,12 +176,12 @@ function logView(){
     <div class="lgcard lg-static">
       <div class="lgct"><span class="lgbadge blue">计划选择</span>
         <div class="lgdrop"><select id="planSel">
-          <option value="">— 选择你上传的训练计划（14份） —</option>
+          <option value="">— 选择你上传的训练计划（${PLANS.length}份） —</option>
           ${PLANS.map(p=>`<option value="${p.id}" ${p.id===cur?'selected':''}>${esc(p.name)}（${p.tag}）</option>`).join('')}
         </select></div>
       </div>
     </div>
-    <div class="lgstat"><div><b>${doneDays}</b><span>已完成训练日</span></div><div><b>${Object.keys(allLogs).length}</b><span>有记录计划</span></div><div><b>14</b><span>计划总数</span></div></div>
+    <div class="lgstat"><div><b>${doneDays}</b><span>已完成训练日</span></div><div><b>${Object.keys(allLogs).length}</b><span>有记录计划</span></div><div><b>${PLANS.length}</b><span>计划总数</span></div></div>
   </div>`;
 }
 function openPlan(id){
@@ -137,13 +202,14 @@ function planView(){
   <h2 class="modtitle">${icoBoxInline('log')} ${esc(p.name)}</h2>
   <div class="ptags"><span class="ptag">${p.tag}</span><span class="ptag">${p.weeks}</span><span class="ptag">${p.freq}</span></div>
 
-  <div class="lgsec">
+  ${inputs.length? `<div class="lgsec">
     <div class="lgsh">🏋️ 首次训练极限 ${allFilled?'<span class="lgok">已保存 · 已换算 ✓</span>':'<span class="lgneed">填写一次即可，后续自动换算</span>'}</div>
     <div class="lgmaxgrid${inputs.length>2?' three':''}">${inputs.map(i=>`
       <div class="lgf"><label>${esc(i.label)}</label><input type="number" step="2.5" min="0" class="lgmaxI" data-k="${esc(i.k)}" value="${mx[i.k]!==undefined?mx[i.k]:(i.def!==undefined?i.def:'')}" placeholder="kg" onchange="saveMaxAuto()"></div>`).join('')}
     </div>
-    <div class="lgnote" style="margin-top:8px">📐 首次填一次极限即可，之后按计划表逻辑自动换算，全部取 2.5kg 整数倍。</div>
-  </div>
+    <div class="lgnote" style="margin-top:8px">📐 ${t.rolling? '后续各模块训练上限按上一模块第3周主项末组的「实次」自动推算，此处只填一次。' : '首次填一次极限即可，之后按计划表逻辑自动换算，全部取 2.5kg 整数倍。'}</div>
+    ${t.rolling? `<div class="jmroll" id="jmRoll">${jmRollHTML()}</div>`:''}
+  </div>` : `<div class="lgsec"><div class="lgnote">🎯 本计划按 <b>RPE 处方</b>执行：重量由当天 RPE 与次数自行确定，不自动换算。填「实重 + 实次」即可记录。</div></div>`}
 
   <div class="lgsec" id="gridSec">
     <div class="lgsh">✅ 每日完成 <span class="lgpg">${pr.D}/${pr.T} 组 · ${pr.pct}%</span></div>
@@ -205,6 +271,41 @@ function refreshBar(){
   const bar=document.querySelector('.lgbarsm i'); if(bar) bar.style.width=pr.pct+'%';
 }
 
+
+
+/* Juggernaut 四个模块训练上限速览（自动推算，不可手改） */
+function jmRollHTML(){
+  const lifts=[['sq','深蹲'],['bp','卧推'],['dl','硬拉'],['ohp','实力推']];
+  return lifts.map(([k,label])=>{
+    const cells=[1,2,3,4].map(m=>{
+      const tm=jmTM(curPlanId,m,k);
+      return `<div class="jr">M${m}<b>${tm!==null?fmtW(tm):'—'}</b></div>`;
+    }).join('');
+    return `<div style="grid-column:1/-1;font-size:10px;color:var(--sub);margin-top:4px">${label} 各模块 TM（kg）</div><div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:5px">${cells}</div>`;
+  }).join('');
+}
+
+
+/* 刷新 Juggernaut 的 TM 速览（填完 AMAP 实次后立即变） */
+function refreshRoll(){
+  const el=document.getElementById('jmRoll');
+  if(el) el.innerHTML=jmRollHTML();
+  const t=getT(curPlanId);
+  if(t && t.rolling){ const box=document.getElementById('dayBox'); if(box && showDay) box.innerHTML=dayHTML(t) }
+}
+
+/* ---------- 辅助动作下拉选择 ---------- */
+function recPick(key){
+  const all=jget('sddr_acts',{});
+  return all[curPlanId+':'+key]||'';
+}
+function pickAct(key,v){
+  const all=jget('sddr_acts',{});
+  if(v) all[curPlanId+':'+key]=v; else delete all[curPlanId+':'+key];
+  jset('sddr_acts', all);
+  toast(v?('已选：'+v):'已清除选择');
+}
+
 /* ---------- 当日训练 ---------- */
 function flatDays(t){ const out=[]; t.weeks.forEach((w,wi)=>w.d.forEach((d,di)=>out.push([wi,di]))); return out }
 function switchDay(off){
@@ -226,7 +327,7 @@ function buildBlocks(day){
     if(last && last.n===g.n){
       g.s.forEach((s,si)=>last.sets.push({s,gi,si}));
     } else {
-      blocks.push({n:g.n, sets:g.s.map((s,si)=>({s,gi,si}))});
+      blocks.push({n:g.n, sets:g.s.map((s,si)=>({s,gi,si})), lib:g.lib||null, key:curW+'-'+curD+'-'+gi});
     }
   });
   if(isRuss){
@@ -258,7 +359,15 @@ function dayHTML(t){
     const multi=bk.sets.length>1;
     /* 组数严格按计划表的 1×N 解读为「1 组做 N 次」，逐行展开；Russwole 不在动作后标组数 */
     const badge=(rus||!multi)?'':`<em>${bk.sets.length} 组</em>`;
-    html+=`<div class="ghead${bk.main?' main':''}"><span>${esc(bk.n)}</span>${bk.main?'<i class="mtag">主项</i>':''}${badge}</div>`;
+    const lib=bk.lib;
+    if(lib && lib.length){
+      const picked=recPick(bk.key);
+      const opts=lib.map(o=>`<option value="${esc(o)}" ${o===picked?'selected':''}>${esc(o)}</option>`).join('');
+      html+=`<div class="ghead${bk.main?' main':''} libg"><span>${esc(bk.n)}</span>
+        <select class="libSel" onchange="pickAct('${bk.key}',this.value)"><option value="">— 选动作 —</option>${opts}</select></div>`;
+    } else {
+      html+=`<div class="ghead${bk.main?' main':''}"><span>${esc(bk.n)}</span>${bk.main?'<i class="mtag">主项</i>':''}${badge}</div>`;
+    }
     bk.sets.forEach((it,n)=>{
       const gi=it.gi, si=it.si, s=it.s;
       const k=gi+'_'+si, lg=rec.sets[k]||{};
@@ -313,6 +422,7 @@ function completeDay(){
   rerenderDay(); const st=dayState(curPlanId,curW,curD);
   const dh=document.querySelector('.daypr'); if(dh) dh.innerHTML=`${st.done}/${st.total} 组${st.complete?' · 已打勾 ✓':''}`;
   refreshBar();
+  refreshRoll();
   toast(st.complete?'本日完成 ✓ 已保存':'还有未预填重量的组，请手动补填');
 }
 
@@ -337,6 +447,7 @@ function saveSet(gi,si,f,v){
   const dh=document.querySelector('.daypr');
   if(dh) dh.innerHTML=`${st.done}/${st.total} 组${st.complete?' · 已打勾 ✓':''}`;
   refreshBar();
+  refreshRoll();
   toast(st.complete?'本日完成 ✓ 已保存':'已自动保存');
 }
 function rerenderDay(){ const box=document.getElementById('dayBox'); if(box) box.innerHTML=dayHTML(getT(curPlanId)) }

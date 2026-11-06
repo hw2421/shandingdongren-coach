@@ -335,6 +335,11 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
 .dnav2 button:disabled{opacity:.3}
 .dnav2 span{font-size:10px;color:var(--sub);flex:none;font-variant-numeric:tabular-nums}
 .daydone{margin:8px 0 0}
+.ghead.libg{flex-wrap:wrap;gap:4px}
+.ghead.libg .libSel{margin-left:auto;max-width:58%;background:#101512;border:1px solid #3b463c;color:var(--acc2);border-radius:6px;padding:3px 5px;font-size:10.5px;font-family:inherit;outline:none}
+.jmroll{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
+.jmroll .jr{background:#101512;border:1px solid var(--line);border-radius:7px;padding:5px 4px;text-align:center;font-size:10px;color:var(--sub);line-height:1.5}
+.jmroll .jr b{display:block;color:var(--acc2);font-size:11.5px;font-variant-numeric:tabular-nums}
 .btnDone{width:100%;background:rgba(213,250,117,.12);border:1px solid var(--acc);color:var(--acc);border-radius:9px;padding:10px;font-size:12.5px;font-weight:700;font-family:inherit;cursor:pointer}
 .btnDone:active{transform:scale(.99);opacity:.85}
 .lgtoast{position:fixed;left:50%;bottom:86px;transform:translate(-50%,14px);background:#2a3a22;border:1px solid var(--acc);color:var(--acc);font-size:12.5px;padding:8px 16px;border-radius:99px;opacity:0;pointer-events:none;transition:.22s;z-index:99;white-space:nowrap;box-shadow:0 6px 22px rgba(0,0,0,.5)}
@@ -377,11 +382,11 @@ h2.modtitle svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:
       <svg class="logo" viewBox="0 0 48 48" fill="none" stroke="#d5fa75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5l16 8.5V25c0 9.5-7 15.5-16 18C15 40.5 8 34.5 8 25V13.5z"/><path d="M17 27l4.5-5.5 3.5 3.5 6-8"/></svg>
       <h1>山顶洞人<span>力训教练</span></h1>
     </div>
-    <div class="tagline">力量训练知识体系 · 综合 16 份专业资料 · 14 份训练计划 · 支持智能问答</div>
+    <div class="tagline">力量训练知识体系 · 综合 16 份专业资料 · 18 个训练计划 · 支持智能问答</div>
     <div class="searchbar"><input id="q" placeholder="搜索：低杆深蹲、平台期、腰痛、MEV…" /></div>
   </header>
   <main id="view"></main>
-  <div class="foot">本系统内容综合自：《力量训练原理》《肌肉肥大科学训练原则》《如何深蹲/卧推/硬拉·终极指南》《力量训练基础》《力量举指南（赵伟）》《Juggernaut 力量举手册》《力量举计划设计手册》《RTS 反应训练系统》《Westside 共轭法用户指南》《终极饮食设置指南》《肌骨疼痛康复临床工作笔记》及 RTS 系列×4、Juggernaut Method、腰王、Calgary Barbell、GZCL波浪撕裂者、SSTT×Jamal Browner、Russwole、帕金斯74kg、古斯塔夫16周、山顶洞人CATS 4.0、斯莫洛夫共 14 份训练计划表。配图截取自对应资料页，页码为 PDF 物理页码，仅供个人学习。<br>伤病与康复内容仅供学习参考，不能替代专业医疗诊断，请及时就医。</div>
+  <div class="foot">本系统内容综合自：《力量训练原理》《肌肉肥大科学训练原则》《如何深蹲/卧推/硬拉·终极指南》《力量训练基础》《力量举指南（赵伟）》《Juggernaut 力量举手册》《力量举计划设计手册》《RTS 反应训练系统》《Westside 共轭法用户指南》《终极饮食设置指南》《肌骨疼痛康复临床工作笔记》及 RTS 系列×4、Juggernaut Method、腰王、Calgary Barbell、GZCL波浪撕裂者、SSTT×Jamal Browner、Russwole、帕金斯74kg、古斯塔夫16周、山顶洞人CATS 4.0、斯莫洛夫共 18 个训练计划（RTS×4、Juggernaut、腰王基础C1、腰王进阶C1、Calgary、GZCL、SSTT、Russwole、74kg、古斯塔夫、CATS×4 cycle、斯莫洛夫）。配图截取自对应资料页，页码为 PDF 物理页码，仅供个人学习。<br>伤病与康复内容仅供学习参考，不能替代专业医疗诊断，请及时就医。</div>
 </div>
 <nav class="navbar" id="nav"></nav>
 <script>
